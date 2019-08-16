@@ -51,7 +51,7 @@ import java.lang.reflect.Field;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
-@ContextConfiguration(locations = "classpath:spring/applicationContext-sso.xml")
+@ContextConfiguration(locations = "classpath:springMVC/spring-mvc-sso.xml")
 public class SolrTest extends AbstractJUnit4SpringContextTests {
 
     @Autowired
