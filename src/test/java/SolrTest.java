@@ -12,6 +12,7 @@ import cn.ncbsp.omicsdi.solr.util.SolrQueryBuilder;
 import cn.ncbsp.omicsdi.solr.util.XmlHelper;
 import com.alibaba.fastjson.JSON;
 import org.apache.solr.client.solrj.SolrQuery;
+import org.apache.solr.client.solrj.SolrResponse;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.HttpSolrClient;
 import org.apache.solr.client.solrj.request.CoreAdminRequest;
@@ -1296,4 +1297,17 @@ public class SolrTest extends AbstractJUnit4SpringContextTests {
     }
 
 
+
+    @Test
+    public void testLukeFunctions() {
+        LukeRequest lukeRequest = new LukeRequest();
+        try {
+            lukeRequest.addField("ok");
+            Object object = lukeRequest.process(solrClient).getResponse();
+        } catch (SolrServerException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }

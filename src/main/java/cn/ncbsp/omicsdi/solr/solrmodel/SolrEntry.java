@@ -26,6 +26,9 @@ public class SolrEntry {
     @Field
     String database;
 
+    @Field(value = "domain_source")
+    String domainSource;
+
     @Field(value = "date_publication")
     String datePublication;
 
@@ -576,5 +579,13 @@ news
 
     public void setPubmedAbstractSynonyms(String pubmedAbstractSynonyms) {
         this.pubmedAbstractSynonyms = pubmedAbstractSynonyms;
+    }
+
+    public String getDomainSource() {
+        return domainSource;
+    }
+
+    public void setDomainSource(String domainSource) {
+        this.domainSource = domainSource;
     }
 }

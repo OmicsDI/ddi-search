@@ -29,7 +29,9 @@ public class SolrEntryUtil {
                         case "publication":
                             solrEntry.setDatePublication(date.getValue());
                             try {
-                                solrEntry.setPublicationDate(simpleDateFormat.parse(date.getValue()));
+                                if(StringUtils.isNotBlank(date.getValue())) {
+                                    solrEntry.setPublicationDate(simpleDateFormat.parse(date.getValue()));
+                                }
                             } catch (ParseException e) {
                                 e.printStackTrace();
                             }
@@ -45,6 +47,7 @@ public class SolrEntryUtil {
                 });
             }
             solrEntry.setDatabase(database);
+            solrEntry.setDomainSource(database);
             Map<String, List<String>> additionalMap = new HashMap<>();
             List<String> taxonomy = new ArrayList<>();
             List<String> ensembl = new ArrayList<>();
