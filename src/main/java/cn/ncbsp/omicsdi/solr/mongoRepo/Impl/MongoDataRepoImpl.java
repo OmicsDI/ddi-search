@@ -26,7 +26,6 @@ public class MongoDataRepoImpl implements IMongoDataRepo {
     public Database getAllDatasets(Query query, String databaseName) {
 
         List<Dataset> list = mongoTemplate.find(query, Dataset.class);
-        System.out.println("xx");
         List<cn.ncbsp.omicsdi.solr.model.Entry> entryList = list.stream().map(x -> {
             Entry entry = new Entry();
             Map<String, Set<String>> crossReferencesMap = x.getCrossReferences();
@@ -99,6 +98,7 @@ public class MongoDataRepoImpl implements IMongoDataRepo {
         database.setEntries(entryList);
         database.setName(databaseName);
         database.setEntryCount(entryList.size());
+        // wrong
         database.setReleaseDate(new Date().toString());
         return database;
     }

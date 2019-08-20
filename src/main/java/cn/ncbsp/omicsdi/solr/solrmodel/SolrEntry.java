@@ -14,6 +14,166 @@ public class SolrEntry {
     @Field
     String id;
 
+    @Field(value = "repository")
+    List<String> repository;
+
+    @Field(value = "omics_type")
+    List<String> omicsType;
+
+    @Field(value = "full_dataset_link")
+    List<String> fullDatasetLink;
+
+    @Field(value = "submitter")
+    List<String> submitter;
+
+    @Field(value = "submitter_email")
+    List<String> submitterEmail;
+
+    @Field(value = "submitter_mail")
+    List<String> submitterMail;
+
+    @Field(value = "submitter_affiliation")
+    List<String> submitterAffiliation;
+
+    @Field(value = "instrument_platform")
+    List<String> instrumentPlatform;
+
+    @Field(value = "data_protocol")
+    String dataProtocol;
+
+    @Field(value = "sample_protocol")
+    String sampleProtocol;
+
+    @Field(value = "name_synonyms")
+    String nameSynonyms;
+
+    @Field(value = "description_synonyms")
+    String descriptionSynonyms;
+
+    @Field(value = "sample_synonyms")
+    String sampleSynonyms;
+
+    @Field(value = "data_synonyms")
+    String dataSynonyms;
+
+    @Field(value = "pubmed_abstract")
+    String pubmedAbstract;
+
+    @Field(value = "pubmed_title")
+    String pubmedTitle;
+
+    @Field(value = "pubmed_authors")
+    List<String> pubmedAuthors;
+
+    @Field(value = "pubmed_abstract_synonyms")
+    String pubmedAbstractSynonyms;
+
+    @Field(value = "pubmed_title_synonyms")
+    String pubmedTitleSynonyms;
+
+    @Field(value = "model")
+    List<String> model;
+
+    @Field(value = "submission")
+    List<String> submission;
+
+    @Field(value = "software")
+    List<String> software;
+
+    @Field(value = "species")
+    List<String> species;
+
+    @Field(value = "cell_type")
+    List<String> cellType;
+
+    @Field(value = "disease")
+    List<String> disease;
+
+    @Field(value = "tissue")
+    List<String> tissue;
+
+    @Field(value = "additional_accession")
+    List<String> additionalAccession;
+
+    @Field(value = "secondary_accession")
+    List<String> secondaryAccession;
+
+    @Field(value = "submitter_keywords")
+    List<String> submitterKeywords;
+
+    @Field(value = "dataset_file")
+    List<String> datasetFile;
+
+    @Field(value = "file_size")
+    String fileSize;
+
+    @Field(value = "file_count")
+    String fileCount;
+
+    @Field(value = "ptm_modification")
+    List<String> ptmModification;
+
+    @Field(value = "study_factor")
+    List<String> studyFactor;
+
+    @Field(value = "technology_type")
+    List<String> technologyType;
+
+    @Field(value = "proteomexchange_type_submission")
+    List<String> proteomexchangeTypeSubmission;
+
+    @Field(value = "pubchem_id")
+    List<String> pubchemId;
+
+    @Field(value = "metabolite_name")
+    List<String> metaboliteName;
+
+    @Field(value = "protein_name")
+    List<String> proteinName;
+
+    @Field(value = "funding")
+    List<String> funding;
+
+    @Field(value = "curator_keywords")
+    List<String> curatorKeywords;
+
+    @Field(value = "dataset_type")
+    List<String> datasetType;
+
+    @Field(value = "gene_name")
+    List<String> geneName;
+
+    @Field(value = "download_count")
+    String downloadCount;
+
+    @Field(value = "download_count_scaled")
+    String downloadCountScaled;
+
+    @Field(value = "search_count")
+    String searchCount;
+
+    @Field(value = "normalized_connections")
+    String normalizedConnections;
+
+    @Field(value = "citation_count")
+    String citationCount;
+
+    @Field(value = "citation_count_scaled")
+    String citationCountScaled;
+
+    @Field(value = "view_count")
+    String viewCount;
+
+    @Field(value = "view_count_scaled")
+    String viewCountScaled;
+
+    @Field(value = "reanalysis_count")
+    String reanalysisCount;
+
+    @Field(value = "reanalysis_count_scaled")
+    String reanalysisCountScaled;
+
+
     @Field
     String acc;
 
@@ -44,115 +204,12 @@ public class SolrEntry {
     @Field(value = "date_others")
     String dateOthers;
 
-    @Field(value = "pubmed_abstract")
-    String pubmedAbstract;
-
-    @Field(value = "view_count")
-    String viewCount;
-
-    @Field(value = "citation_count")
-    String citationCount;
-
-    @Field(value = "search_count")
-    String searchCount;
-
-    @Field(value = "reanalysis_count")
-    String reanalysisCount;
-
-
-    /*
-     * news
-     */
-    @Field(value = "download_count_scaled")
-    String downloadCountScaled;
-
-    @Field(value = "citation_count_scaled")
-    String citationCountScaled;
-
-    @Field(value = "reanalysis_count_scaled")
-    String reanalysisCountScaled;
-
-    @Field(value = "view_count_scaled")
-    String viewCountScaled;
-
-    @Field(value = "dataset_file")
-    List<String> datasetFile;
-
-    @Field(value = "software")
-    List<String> software;
-
-    @Field(value = "full_dataset_link")
-    List<String> fullDatasetLink;
-
-    @Field(value = "download_count")
-    String downloadCount;
-
-    @Field(value = "sample_synonyms")
-    String sampleSynonyms;
-
-    @Field(value = "data_synonyms")
-    String dataSynonyms;
-
-    @Field(value = "name_synonyms")
-    String nameSynonyms;
-
-    @Field(value = "description_synonyms")
-    String descriptionSynonyms;
-
-
-    @Field(value = "repository")
-    List<String> repository;
-
-    @Field(value = "submitter_email")
-    List<String> submitterEmail;
-
-    @Field(value = "submitter")
-    List<String> submitter;
-
-
-    @Field(value = "species")
-    List<String> species;
-
-    @Field(value = "secondary_accession")
-    List<String> secondaryAccession;
-
-    @Field(value = "pubmed_title")
-    String pubmedTitle;
-
-    @Field(value = "pubmed_authors")
-    List<String> pubmedAuthors;
-
-
-    @Field(value = "pubmed_title_synonyms")
-    String pubmedTitleSynonyms;
-
-    @Field(value = "pubmed_abstract_synonyms")
-    String pubmedAbstractSynonyms;
-/*
-news
- */
-
 
     @Field(value = "TAXONOMY")
     List<String> taxonomy;
 
-    @Field(value = "tissue")
-    List<String> tissue;
-
-    @Field(value = "omics_type")
-    List<String> omicsType;
-
-    @Field(value = "disease")
-    List<String> disease;
-
-    @Field(value = "submitter_keywords")
-    List<String> submitterKeywords;
-
-    @Field(value = "curator_keywords")
-    List<String> curatorKeywords;
-
     @Field(value = "publication_date")
-    Date publicationDate;
+    String publicationDate;
 
     @Field(value = "ENSEMBL")
     List<String> ENSEMBL;
@@ -166,11 +223,7 @@ news
     @Field(value = "PUBMED")
     List<String> PUBMED;
 
-    @Field(value = "data_protocol")
-    String dataProtocol;
 
-    @Field(value = "sample_protocol")
-    String sampleProtocol;
     @Field(value = "additional_*")
     Map<String, List<String>> additionalFields;
 
@@ -380,11 +433,11 @@ news
         this.curatorKeywords = curatorKeywords;
     }
 
-    public Date getPublicationDate() {
+    public String getPublicationDate() {
         return publicationDate;
     }
 
-    public void setPublicationDate(Date publicationDate) {
+    public void setPublicationDate(String publicationDate) {
         this.publicationDate = publicationDate;
     }
 
@@ -587,5 +640,165 @@ news
 
     public void setDomainSource(String domainSource) {
         this.domainSource = domainSource;
+    }
+
+    public List<String> getSubmitterMail() {
+        return submitterMail;
+    }
+
+    public void setSubmitterMail(List<String> submitterMail) {
+        this.submitterMail = submitterMail;
+    }
+
+    public List<String> getSubmitterAffiliation() {
+        return submitterAffiliation;
+    }
+
+    public void setSubmitterAffiliation(List<String> submitterAffiliation) {
+        this.submitterAffiliation = submitterAffiliation;
+    }
+
+    public List<String> getInstrumentPlatform() {
+        return instrumentPlatform;
+    }
+
+    public void setInstrumentPlatform(List<String> instrumentPlatform) {
+        this.instrumentPlatform = instrumentPlatform;
+    }
+
+    public List<String> getModel() {
+        return model;
+    }
+
+    public void setModel(List<String> model) {
+        this.model = model;
+    }
+
+    public List<String> getSubmission() {
+        return submission;
+    }
+
+    public void setSubmission(List<String> submission) {
+        this.submission = submission;
+    }
+
+    public List<String> getCellType() {
+        return cellType;
+    }
+
+    public void setCellType(List<String> cellType) {
+        this.cellType = cellType;
+    }
+
+    public List<String> getAdditionalAccession() {
+        return additionalAccession;
+    }
+
+    public void setAdditionalAccession(List<String> additionalAccession) {
+        this.additionalAccession = additionalAccession;
+    }
+
+    public String getFileSize() {
+        return fileSize;
+    }
+
+    public void setFileSize(String fileSize) {
+        this.fileSize = fileSize;
+    }
+
+    public String getFileCount() {
+        return fileCount;
+    }
+
+    public void setFileCount(String fileCount) {
+        this.fileCount = fileCount;
+    }
+
+    public List<String> getPtmModification() {
+        return ptmModification;
+    }
+
+    public void setPtmModification(List<String> ptmModification) {
+        this.ptmModification = ptmModification;
+    }
+
+    public List<String> getStudyFactor() {
+        return studyFactor;
+    }
+
+    public void setStudyFactor(List<String> studyFactor) {
+        this.studyFactor = studyFactor;
+    }
+
+    public List<String> getTechnologyType() {
+        return technologyType;
+    }
+
+    public void setTechnologyType(List<String> technologyType) {
+        this.technologyType = technologyType;
+    }
+
+    public List<String> getProteomexchangeTypeSubmission() {
+        return proteomexchangeTypeSubmission;
+    }
+
+    public void setProteomexchangeTypeSubmission(List<String> proteomexchangeTypeSubmission) {
+        this.proteomexchangeTypeSubmission = proteomexchangeTypeSubmission;
+    }
+
+    public List<String> getPubchemId() {
+        return pubchemId;
+    }
+
+    public void setPubchemId(List<String> pubchemId) {
+        this.pubchemId = pubchemId;
+    }
+
+    public List<String> getMetaboliteName() {
+        return metaboliteName;
+    }
+
+    public void setMetaboliteName(List<String> metaboliteName) {
+        this.metaboliteName = metaboliteName;
+    }
+
+    public List<String> getProteinName() {
+        return proteinName;
+    }
+
+    public void setProteinName(List<String> proteinName) {
+        this.proteinName = proteinName;
+    }
+
+    public List<String> getFunding() {
+        return funding;
+    }
+
+    public void setFunding(List<String> funding) {
+        this.funding = funding;
+    }
+
+    public List<String> getDatasetType() {
+        return datasetType;
+    }
+
+    public void setDatasetType(List<String> datasetType) {
+        this.datasetType = datasetType;
+    }
+
+    public List<String> getGeneName() {
+        return geneName;
+    }
+
+    public void setGeneName(List<String> geneName) {
+        this.geneName = geneName;
+    }
+
+    public String getNormalizedConnections() {
+        return normalizedConnections;
+    }
+
+    public void setNormalizedConnections(String normalizedConnections) {
+        this.normalizedConnections = normalizedConnections;
     }
 }

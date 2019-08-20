@@ -3,6 +3,7 @@ package cn.ncbsp.omicsdi.solr.util;
 import cn.ncbsp.omicsdi.solr.model.Entry;
 import cn.ncbsp.omicsdi.solr.solrmodel.SolrEntry;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateUtils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -18,7 +19,6 @@ public class SolrEntryUtil {
         list.forEach(entry -> {
             SolrEntry solrEntry = new SolrEntry();
 
-
             solrEntry.setId(entry.getId());
             solrEntry.setAcc(entry.getAcc());
             solrEntry.setName(entry.getName().getValue());// ???
@@ -28,13 +28,7 @@ public class SolrEntryUtil {
                     switch (date.getType()) {
                         case "publication":
                             solrEntry.setDatePublication(date.getValue());
-                            try {
-                                if(StringUtils.isNotBlank(date.getValue())) {
-                                    solrEntry.setPublicationDate(simpleDateFormat.parse(date.getValue()));
-                                }
-                            } catch (ParseException e) {
-                                e.printStackTrace();
-                            }
+                            solrEntry.setPublicationDate(date.getValue().substring(0,4));
                         case "submission ":
                             solrEntry.setDateSubmission(date.getValue());
                         case "updated":
@@ -84,6 +78,25 @@ public class SolrEntryUtil {
             solrEntry.setCHEBI(chebi);
             solrEntry.setPUBMED(pubmed);
 
+            List<String> submitterAffiliation = new ArrayList<>();
+            List<String> instrumentPlatform = new ArrayList<>();
+
+            List<String> model = new ArrayList<>();
+            List<String> submission = new ArrayList<>();
+            List<String> cellType = new ArrayList<>();
+            List<String> additionalAccession = new ArrayList<>();
+            List<String> ptmModification = new ArrayList<>();
+            List<String> studyFactor = new ArrayList<>();
+            List<String> technologyType = new ArrayList<>();
+            List<String> proteomexchangeTypeSubmission = new ArrayList<>();
+            List<String> pubchemId = new ArrayList<>();
+            List<String> metaboliteName = new ArrayList<>();
+            List<String> proteinName = new ArrayList<>();
+            List<String> funding = new ArrayList<>();
+            List<String> datasetType = new ArrayList<>();
+            List<String> geneName = new ArrayList<>();
+
+
             List<String> tissues = new ArrayList<>();
             List<String> diseases = new ArrayList<>();
             List<String> omicsTypes = new ArrayList<>();
@@ -98,13 +111,66 @@ public class SolrEntryUtil {
             List<String> species = new ArrayList<>();
 
             List<String> secondaryAccession = new ArrayList<>();
-            List<String> pubmedTitles = new ArrayList<>();
             List<String> pubmedAuthors = new ArrayList<>();
 
             entry.getAdditionalFields().getField().forEach(field -> {
                 switch (field.getName()) {
                     case "pubmed_abstract":
                         solrEntry.setPubmedAbstract(field.getValue());
+                        break;
+                    case "dataset_type":
+                        datasetType.add(field.getValue());
+                        break;
+                    case "gene_name":
+                        geneName.add(field.getValue());
+                        break;
+                    case "funding":
+                        funding.add(field.getValue());
+                        break;
+                    case "protein_name":
+                        proteinName.add(field.getValue());
+                        break;
+                    case "metabolite_name":
+                        metaboliteName.add(field.getValue());
+                        break;
+                    case "pubchem_id":
+                        pubchemId.add(field.getValue());
+                        break;
+                    case "proteomexchange_type_submission":
+                        proteomexchangeTypeSubmission.add(field.getValue());
+                        break;
+                    case "technology_type":
+                        technologyType.add(field.getValue());
+                        break;
+                    case "ptm_modification":
+                        ptmModification.add(field.getValue());
+                        break;
+                    case "study_factor":
+                        studyFactor.add(field.getValue());
+                        break;
+                    case "file_count":
+                        solrEntry.setFileCount(field.getValue());
+                        break;
+                    case "file_size":
+                        solrEntry.setFileSize(field.getValue());
+                        break;
+                    case "additional_accession":
+                        additionalAccession.add(field.getValue());
+                        break;
+                    case "cell_type":
+                        cellType.add(field.getValue());
+                        break;
+                    case "submission":
+                        submission.add(field.getValue());
+                        break;
+                    case "model":
+                        model.add(field.getValue());
+                        break;
+                    case "submitter_affiliation":
+                        submitterAffiliation.add(field.getValue());
+                        break;
+                    case "instrument_platform":
+                        instrumentPlatform.add(field.getValue());
                         break;
                     case "view_count":
                         solrEntry.setViewCount(field.getValue());
@@ -140,6 +206,9 @@ public class SolrEntryUtil {
                         solrEntry.setSampleProtocol(field.getValue());
                         break;
                     //????
+                    case "normalized_connections":
+                        solrEntry.setNormalizedConnections(field.getValue());
+                        break;
                     case "download_count_scaled":
                         solrEntry.setDownloadCountScaled(field.getValue());
                         break;
@@ -220,6 +289,28 @@ public class SolrEntryUtil {
             });
 
 
+            solrEntry.setSubmitterAffiliation(submitterAffiliation);
+            solrEntry.setInstrumentPlatform(instrumentPlatform);
+
+            solrEntry.setPubchemId(pubchemId);
+            solrEntry.setMetaboliteName(metaboliteName);
+            solrEntry.setProteinName(proteinName);
+            solrEntry.setFunding(funding);
+
+            solrEntry.setDatasetType(datasetType);
+            solrEntry.setGeneName(geneName);
+
+            solrEntry.setModel(model);
+            solrEntry.setSubmission(submission);
+            solrEntry.setPtmModification(ptmModification);
+            solrEntry.setStudyFactor(studyFactor);
+            solrEntry.setTechnologyType(technologyType);
+            solrEntry.setProteomexchangeTypeSubmission(proteomexchangeTypeSubmission);
+
+            solrEntry.setCellType(cellType);
+
+            solrEntry.setAdditionalAccession(additionalAccession);
+
             solrEntry.setDatasetFile(datasetFiles);
             solrEntry.setSoftware(softwares);
             solrEntry.setFullDatasetLink(fulldatasetLinks);
@@ -227,6 +318,7 @@ public class SolrEntryUtil {
 
             solrEntry.setRepository(repositories);
             solrEntry.setSubmitterEmail(submitterEmails);
+            solrEntry.setSubmitterMail(submitterEmails);
             solrEntry.setSubmitter(submitters);
             solrEntry.setSpecies(species);
             solrEntry.setSecondaryAccession(secondaryAccession);
