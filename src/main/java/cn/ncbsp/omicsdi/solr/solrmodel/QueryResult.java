@@ -17,7 +17,7 @@ import java.util.Set;
 public class QueryResult {
 
     @JsonProperty("hitCount")
-    Integer count = null;
+    Integer hitCount = null;
 
     @JsonProperty("entries")
     Entry[] entries = null;
@@ -29,15 +29,15 @@ public class QueryResult {
     List<Domains> domains;
 
     public QueryResult() {
-        count = 0;
+        hitCount = 0;
     }
 
-    public Integer getCount() {
-        return count;
+    public Integer getHitCount() {
+        return hitCount;
     }
 
-    public void setCount(Integer count) {
-        this.count = count;
+    public void setHitCount(Integer hitCount) {
+        this.hitCount = hitCount;
     }
 
     public Entry[] getEntries() {
@@ -95,7 +95,7 @@ public class QueryResult {
                 i++;
             }
 
-            count = entries.size();
+            hitCount = entries.size();
         }
     }
 }

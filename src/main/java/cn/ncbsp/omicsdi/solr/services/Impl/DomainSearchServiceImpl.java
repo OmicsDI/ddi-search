@@ -35,7 +35,7 @@ public class DomainSearchServiceImpl implements IDomainSearchService {
 
         System.out.println("ok");
 
-        queryResult.setCount((int) facetPage.getTotalElements());
+        queryResult.setHitCount((int) facetPage.getTotalElements());
 
 
         List<SolrEntry> solrEntryList = facetPage.getContent();

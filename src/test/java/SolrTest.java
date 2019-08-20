@@ -774,7 +774,7 @@ public class SolrTest extends AbstractJUnit4SpringContextTests {
             e.printStackTrace();
         }
         QueryResult queryResult = new QueryResult();
-        queryResult.setCount(queryResponse.getResults().size());
+        queryResult.setHitCount(queryResponse.getResults().size());
 
         Entry[] entries = queryResponse.getResults().stream().map(x -> {
             Entry entry = new Entry();
@@ -821,7 +821,7 @@ public class SolrTest extends AbstractJUnit4SpringContextTests {
             return facet;
         }).toArray(Facet[]::new);
         queryResult.setFacets(facets);
-        queryResult.setCount(queryResponse.getResults().size());
+        queryResult.setHitCount(queryResponse.getResults().size());
 
 
 //        solrFacetService.getFacetEntriesByDomains("omicsdi", facetQueryModel);

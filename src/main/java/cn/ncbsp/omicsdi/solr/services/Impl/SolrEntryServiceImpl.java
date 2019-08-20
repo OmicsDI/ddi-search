@@ -16,8 +16,12 @@ import cn.ncbsp.omicsdi.solr.util.XmlHelper;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
+import org.apache.solr.client.solrj.request.CoreAdminRequest;
+import org.apache.solr.client.solrj.response.CoreAdminResponse;
 import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.QueryResponse;
+import org.apache.solr.common.params.CoreAdminParams;
+import org.apache.solr.common.util.NamedList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -171,7 +175,7 @@ public class SolrEntryServiceImpl implements ISolrEntryService {
 
         QueryResult queryResult = new QueryResult();
         assert queryResponse != null;
-        queryResult.setCount(queryResponse.getResults().size());
+        queryResult.setHitCount(queryResponse.getResults().size());
 
         cn.ncbsp.omicsdi.solr.solrmodel.Entry[] entries = queryResponse.getResults().stream().map(x -> {
             cn.ncbsp.omicsdi.solr.solrmodel.Entry entry = new cn.ncbsp.omicsdi.solr.solrmodel.Entry();
@@ -191,7 +195,11 @@ public class SolrEntryServiceImpl implements ISolrEntryService {
                 } else if (x.get(key) instanceof  Float) {
                     String str = String.valueOf(x.get(key));
                     map.put(key, new String[]{str});
-                } else {
+                } else if (x.get(key) instanceof Date) {
+                    String str = String.valueOf(x.get(key));
+                    map.put(key, new String[]{str});
+                }
+                else {
                     ArrayList<String> list = (ArrayList<String>) x.get(key);
                     String[] str = new String[list.size()];
                     str = list.toArray(str);
@@ -241,6 +249,19 @@ public class SolrEntryServiceImpl implements ISolrEntryService {
             }).toArray(Facet[]::new);
             queryResult.setFacets(facets);
         }
+
+        CoreAdminRequest coreAdminRequest = new CoreAdminRequest();
+        coreAdminRequest.setAction(CoreAdminParams.CoreAdminAction.STATUS);
+        CoreAdminResponse coreAdminResponse = null;
+        try {
+            coreAdminResponse = coreAdminRequest.process(solrClient);
+        } catch (SolrServerException | IOException e) {
+            e.printStackTrace();
+        }
+        assert coreAdminResponse != null;
+        NamedList<NamedList<Object>> coreStatus = coreAdminResponse.getCoreStatus();
+        NamedList<Object> indexMap = (NamedList<Object>) coreStatus.get("omics").get("index");
+        queryResult.setHitCount((Integer) indexMap.get("numDocs"));
         return queryResult;
     }
 }

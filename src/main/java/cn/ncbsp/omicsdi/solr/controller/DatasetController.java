@@ -229,7 +229,7 @@ public class DatasetController {
         facetQueryModel.setQ(query);
 
         if (StringUtils.isNotBlank(fields)) {
-            facetQueryModel.setFl(fields);
+            facetQueryModel.setFl(this.addDefaultFields(fields));
         }
 
         facetQueryModel.setStart(String.valueOf(start));
@@ -238,6 +238,12 @@ public class DatasetController {
         if(StringUtils.isNotBlank(facetfields)) {
             facetQueryModel.setFacet_field(facetfields);
         }
+
+        if (StringUtils.isBlank(facetfields) && StringUtils.isNotBlank(fields)) {
+            facetQueryModel.setFacet_field(fields);
+        }
+
+
         facetQueryModel.setFacet_limit(String.valueOf(facetcount));
 
 

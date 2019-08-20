@@ -35,7 +35,7 @@ public class SolrTaxonEntryServiceImpl implements ISolrTaxonEntryService {
             e.printStackTrace();
         }
         QueryResult queryResult = new QueryResult();
-        queryResult.setCount(0);
+        queryResult.setHitCount(0);
         queryResult.setFacets(null);
         queryResult.setDomains(null);
         Entry[] entries = queryResponse.getResults().stream().map(x -> {
