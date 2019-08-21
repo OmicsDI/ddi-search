@@ -28,7 +28,16 @@ public class SolrEntryUtil {
                     switch (date.getType()) {
                         case "publication":
                             solrEntry.setDatePublication(date.getValue());
-                            solrEntry.setPublicationDate(date.getValue().substring(0,4));
+                            if(StringUtils.isNotBlank(date.getValue())) {
+                                if(date.getValue().matches("[a-zA-Z]{3}\\s[a-zA-Z]{3}\\s[0-9]{2}\\s[0-9]{2}:[0-9]{2}:[0-9]{2}\\s[a-zA-Z]{3}\\s[0-9]{4}")) {
+                                    solrEntry.setPublicationDate(date.getValue().substring(date.getValue().length()-4));
+                                }else if (date.getValue().matches("[0-9]{2}\\/[0-9]{2}\\/[0-9]{4}")) {
+                                    solrEntry.setPublicationDate(date.getValue().substring(date.getValue().length()-4));
+                                }else {
+                                    solrEntry.setPublicationDate(date.getValue().substring(0,4));
+                                }
+                            }
+
                         case "submission ":
                             solrEntry.setDateSubmission(date.getValue());
                         case "updated":

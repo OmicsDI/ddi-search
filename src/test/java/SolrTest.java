@@ -11,6 +11,7 @@ import cn.ncbsp.omicsdi.solr.solrmodel.*;
 import cn.ncbsp.omicsdi.solr.util.SolrQueryBuilder;
 import cn.ncbsp.omicsdi.solr.util.XmlHelper;
 import com.alibaba.fastjson.JSON;
+import org.apache.commons.lang3.time.DateUtils;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrResponse;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -42,6 +43,8 @@ import org.springframework.test.context.web.WebAppConfiguration;
 
 import java.io.*;
 import java.lang.reflect.Field;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Date;
 import java.util.regex.Pattern;
@@ -1182,6 +1185,23 @@ public class SolrTest extends AbstractJUnit4SpringContextTests {
     @Test
     public void testSolrService() {
         iSolrEntryService.saveSolrEntries("C:\\omicsDI\\solrAPI\\output","C:\\omicsDI\\solrAPI\\backup");
+    }
+
+    @Test
+    public void doDate() throws ParseException {
+        String date = "Tue Feb 07 17:49:00 GMT 2017";
+        String regex = "[a-zA-Z]{3}\\s[a-zA-Z]{3}\\s[0-9]{2}\\s[0-9]{2}:[0-9]{2}:[0-9]{2}\\s[a-zA-Z]{3}\\s[0-9]{4}";
+
+        String a = "asd fds";
+        String regex1 = "[a-zA-Z]{3}\\s[a-zA-Z]{3}";
+
+        boolean b = date.matches(regex);
+        boolean b1 = a.matches(regex1);
+
+////        Date date1 = DateUtils.parseDate(date);
+//        SimpleDateFormat sdf = new SimpleDateFormat();
+//        Date date2 = sdf.parse(date);
+        System.out.println("999");
     }
 
 
