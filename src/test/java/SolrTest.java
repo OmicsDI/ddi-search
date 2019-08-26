@@ -20,8 +20,11 @@ import org.apache.solr.client.solrj.request.CoreAdminRequest;
 import org.apache.solr.client.solrj.request.LukeRequest;
 import org.apache.solr.client.solrj.request.schema.SchemaRequest;
 import org.apache.solr.client.solrj.response.CoreAdminResponse;
+import org.apache.solr.client.solrj.response.LukeResponse;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.response.UpdateResponse;
+import org.apache.solr.client.solrj.response.schema.SchemaRepresentation;
+import org.apache.solr.client.solrj.response.schema.SchemaResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrInputDocument;
@@ -922,7 +925,7 @@ public class SolrTest extends AbstractJUnit4SpringContextTests {
         FacetQueryModel facetQueryModel = new FacetQueryModel();
         facetQueryModel.setQ("taxonomy".toUpperCase() + ":(" + "9606 OR 70448 OR 5476" + ")");
         facetQueryModel.setFacet_field("name");
-        QueryResult queryResult = iSolrEntryService.getQueryResult("omicsdi", facetQueryModel);
+        QueryResult queryResult = iSolrEntryService.getQueryResult("omicsdi", facetQueryModel, null, null);
         System.out.println("xxxxx");
     }
 
@@ -1320,14 +1323,55 @@ public class SolrTest extends AbstractJUnit4SpringContextTests {
 
     @Test
     public void testLukeFunctions() {
-        LukeRequest lukeRequest = new LukeRequest();
+//        LukeRequest lukeRequest = new LukeRequest();
+//        try {
+//            lukeRequest.addField("ok");
+//            Object object = lukeRequest.process(solrClient).getResponse();
+//        } catch (SolrServerException e) {
+//            e.printStackTrace();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        System.out.println("x");
+
+
+
+        Map<String, Object> newField = new HashMap<>();
+        newField.put("name", "test");
+        newField.put("type", "string");
+        newField.put("stored", true);
+        newField.put("indexed", true);
+
+        SchemaRequest.AddField addField = new SchemaRequest.AddField(newField);
+
         try {
-            lukeRequest.addField("ok");
-            Object object = lukeRequest.process(solrClient).getResponse();
+            SchemaResponse.UpdateResponse schemaResponse = addField.process(solrClient, "taxonomy");
+            System.out.println("xxxx");
         } catch (SolrServerException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
+//        try {
+//            SchemaResponse schemaResponse = schemaRequest.process(solrClient, "taxonomy");
+//            SchemaRepresentation schemaRepresentation = schemaResponse.getSchemaRepresentation();
+//            System.out.println("xxxx");
+//        } catch (SolrServerException e) {
+//            e.printStackTrace();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+
+//        LukeRequest lukeRequest = new LukeRequest();
+//        lukeRequest.addField("test");
+//        try {
+//            LukeResponse lukeResponse = lukeRequest.process(solrClient, "taxonomy");
+//            Map<String, LukeResponse.FieldInfo> map = lukeResponse.getFieldInfo();
+//            System.out.println("xx");
+//        } catch (SolrServerException e) {
+//            e.printStackTrace();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
     }
 }

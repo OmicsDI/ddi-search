@@ -2,6 +2,7 @@ package cn.ncbsp.omicsdi.solr.queryModel;
 
 import cn.ncbsp.omicsdi.solr.constant.Constants;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.client.solrj.SolrQuery;
 
 import java.lang.reflect.Field;
@@ -211,5 +212,18 @@ public class SolrQueryBuilder {
         }
 
         return method;
+    }
+
+    public static SolrQuery addSort(String order, String sortfield, SolrQuery solrQuery) {
+        if(StringUtils.isNotBlank(order) && StringUtils.isNotBlank(sortfield)) {
+            if(order.contains("desc")) {
+                solrQuery.setSort(sortfield, SolrQuery.ORDER.desc);
+            }
+
+            if(order.contains("asc")) {
+                solrQuery.setSort(sortfield, SolrQuery.ORDER.asc);
+            }
+        }
+        return solrQuery;
     }
 }

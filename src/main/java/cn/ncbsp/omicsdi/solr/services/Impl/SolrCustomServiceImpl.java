@@ -12,6 +12,7 @@ import cn.ncbsp.omicsdi.solr.solrmodel.Entry;
 import cn.ncbsp.omicsdi.solr.solrmodel.SimilarResult;
 import cn.ncbsp.omicsdi.solr.solrmodel.Term;
 import cn.ncbsp.omicsdi.solr.solrmodel.TermResult;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -141,8 +142,11 @@ public class SolrCustomServiceImpl implements ISolrCustomService {
     }
 
     @Override
-    public SimilarResult getSimilarResult(String core, MLTQueryModel mltQueryModel) {
-        SolrQuery solrQuery = cn.ncbsp.omicsdi.solr.queryModel.SolrQueryBuilder.buildSolrQuery(mltQueryModel);
+    public SimilarResult getSimilarResult(String core, MLTQueryModel mltQueryModel, String order, String sortfield) {
+        SolrQuery solrQuery = SolrQueryBuilder.buildSolrQuery(mltQueryModel);
+
+        SolrQueryBuilder.addSort(order, sortfield, solrQuery);
+
         QueryResponse queryResponse = null;
         try {
             queryResponse = solrClient.query(core, solrQuery);
@@ -151,6 +155,9 @@ public class SolrCustomServiceImpl implements ISolrCustomService {
         }
         assert queryResponse != null;
         NamedList<Object> namedList = queryResponse.getResponse();
+        if(namedList == null) {
+            return null;
+        }
         SolrDocumentList solrDocumentList = (SolrDocumentList) namedList.get("response");
         SimilarResult similarResult = new SimilarResult();
         Entry[] entries = solrDocumentList.stream().map(x -> {

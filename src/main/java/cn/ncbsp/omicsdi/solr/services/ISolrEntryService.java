@@ -21,7 +21,7 @@ public interface ISolrEntryService<T> {
 
     List<T> getSolrEntries(String core, QueryModel queryModel, Class<T> clazz);
 
-    QueryResult getQueryResult(String domain, IQModel iqModel);
+    QueryResult getQueryResult(String domain, IQModel iqModel, String order, String sortfield);
 
     List<NCBITaxonomy> getNCBITaxonomyData(String... taxonId);
 }

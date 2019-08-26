@@ -8,5 +8,5 @@ import cn.ncbsp.omicsdi.solr.solrmodel.FacetList;
  */
 public interface ISolrFacetService {
     //    FacetList getFacetEntriesByDomains(String core, Map<String,String[]> paramMap);
-    FacetList getFacetEntriesByDomains(String core, FacetQueryModel facetQueryModel);
+    FacetList getFacetEntriesByDomains(String core, FacetQueryModel facetQueryModel, String order, String sortField);
 }

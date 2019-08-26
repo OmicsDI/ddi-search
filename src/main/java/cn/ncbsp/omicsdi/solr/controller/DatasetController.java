@@ -14,6 +14,7 @@ import cn.ncbsp.omicsdi.solr.solrmodel.SimilarResult;
 import cn.ncbsp.omicsdi.solr.solrmodel.TermResult;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.solr.client.solrj.SolrQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +38,9 @@ public class DatasetController {
     private static final Logger logger = LoggerFactory.getLogger(DatasetController.class);
 
     private final static String DEFAULT_SOLR_CORE = "omics";
+    private final static String DEFAULT_FACET_FIELD = "repository,tissue,disease,technology_type," +
+            "instrument_platform,publication_date,UNIPROT,ENSEMBL,CHEBI,metabolite_name," +
+            "omics_type,TAXONOMY";
 
     private final
     ISolrCustomService solrCustomService;
@@ -74,60 +78,14 @@ public class DatasetController {
     TermResult getFrequentlyTerms(
             @PathVariable(value = "domain") String domain,
             @PathVariable(value = "fieldid") String fieldid,
-            @RequestParam(value = "termlist", required = false) String termlist
+            @RequestParam(value = "size", required = false) String size
 
     ) {
         TermsQueryModel termsQueryModel = new TermsQueryModel();
         termsQueryModel.setTerms_fl(fieldid);
+        termsQueryModel.setTerms_limit(size);
         return solrCustomService.getFrequentlyTerms(domain, termsQueryModel);
     }
-//    https://www.ebi.ac.uk/ebisearch/ws/rest/omics?query=*:*%20NOT%20(isprivate:true)&fields=description,name,submitter_keywords,curator_keywords,publication_date,TAXONOMY,omics_type,ENSEMBL,UNIPROT,CHEBI,citation_count,view_count,reanalysis_count,search_count,view_count_scaled,reanalysis_count_scaled,citation_count_scaled,normalized_connections,download_count,download_count_scaled&start=0&size=20&facetcount=20&format=JSON
-
-//    @ApiOperation(value = "DatasetWSClient getDatasets")
-//    @RequestMapping(value = "/omics1", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-//    public @ResponseBody
-//    DomainList getDomainsOfOmics(
-//            @RequestParam(value = "query", required = false, defaultValue = "") String query,
-//            @RequestParam(value = "fields", required = false, defaultValue = "") String fields,
-//            @RequestParam(value = "start", required = false, defaultValue = "0") int start,
-//            @RequestParam(value = "size", required = false, defaultValue = "10") int size,
-//            @RequestParam(value = "facetcount", required = false, defaultValue = "20") int facetcount,
-//            @RequestParam(value = "sortfield", required = false, defaultValue = "") String sortfield,
-//            @RequestParam(value = "order", required = false, defaultValue = "asc") String order,
-//            @RequestParam(value = "format", required = false, defaultValue = "JSON") String format
-//    ) {
-//        DomainList domainList = new DomainList();
-//        Properties properties = new Properties();
-//        InputStream in = null;
-//        try {
-//            in = new BufferedInputStream(new FileInputStream("properties/domainList.properties"));
-//        } catch (FileNotFoundException e) {
-//            e.printStackTrace();
-//        }
-//        try {
-//            assert in != null;
-//            properties.load(in);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//        String propertiesId = (String) properties.get("id");
-//        String propertiesName = (String) properties.get("name");
-//        String propertiesDescription = (String) properties.get("description");
-//        String[] ids = propertiesId.split(";");
-//        String[] names = propertiesName.split(";");
-//        String[] descriptions = propertiesDescription.split(";");
-//        Domain[] domains = new Domain[ids.length];
-//        for (int i = 0; i < domains.length; i++) {
-//            Domain domainL = new Domain();
-//            domainL.setId(ids[i]);
-//            domainL.setName(names[i]);
-//            domainL.setDescription(descriptions[i]);
-//            domains[i] = domainL;
-//        }
-//        domainList.setList(domains);
-//        return domainList;
-//    }
-
 
     //https://www.ebi.ac.uk/ebisearch/ws/rest/omics?format=JSON
     @ApiOperation(value = "DatasetWSClient getDatasets")
@@ -147,8 +105,20 @@ public class DatasetController {
             if(!fields.toLowerCase().contains("database")) {
                 sb.append(",database");
             }
+            if(!fields.toLowerCase().contains("repository")) {
+                sb.append(",repository");
+            }
+            if(!fields.toLowerCase().contains("tissue")) {
+                sb.append(",tissue");
+            }
+            if(!fields.toLowerCase().contains("disease")) {
+                sb.append(",disease");
+            }
+            if(!fields.toLowerCase().contains("technology_type")) {
+                sb.append(",technology_type");
+            }
         }else {
-            sb.append("id,database");
+            sb.append("id,database,repository,tissue,disease,technology_type");
         }
 
         return sb.toString();
@@ -161,7 +131,6 @@ public class DatasetController {
      * @param facetcount
      * @param sortfield
      * @param order
-     * @param format
      * @return https://www.ebi.ac.uk/ebisearch/ws/rest/omics?query=cancer%20human%20NOT%20(isprivate:true)&fields=description,name,submitter_keywords,curator_keywords,publication_date,TAXONOMY,omics_type,ENSEMBL,UNIPROT,CHEBI,citation_count,view_count,reanalysis_count,search_count,view_count_scaled,reanalysis_count_scaled,citation_count_scaled,normalized_connections,download_count,download_count_scaled&start=0&size=20&facetcount=20&format=JSON
      * <p>
      * https://www.ebi.ac.uk/ebisearch/ws/rest/omics?query=domain_source:(arrayexpress-repository%20OR%20atlas-experiments%20OR%20biomodels%20OR%20dbgap%20OR%20ega%20OR%20eva%20OR%20geo%20OR%20gnps%20OR%20gpmdb%20OR%20jpost%20OR%20lincs%20OR%20massive%20OR%20metabolights_dataset%20OR%20metabolome_express%20OR%20metabolomics_workbench%20OR%20omics_ena_project%20OR%20paxdb)&facetfields=TAXONOMY&facetcount=100&size=0&format=JSON
@@ -177,13 +146,9 @@ public class DatasetController {
             @RequestParam(value = "facetfields", required = false, defaultValue = "") String facetfields,
             @RequestParam(value = "facetcount", required = false, defaultValue = "20") int facetcount,
             @RequestParam(value = "sortfield", required = false, defaultValue = "") String sortfield,
-            @RequestParam(value = "order", required = false, defaultValue = "asc") String order,
-            @RequestParam(value = "format", required = false, defaultValue = "JSON") String format
+            @RequestParam(value = "order", required = false, defaultValue = "asc") String order
 
     ) {
-        if(facetfields.indexOf(",") > 0) {
-            //todo error
-        }
         FacetQueryModel facetQueryModel = new FacetQueryModel();
         if (StringUtils.isBlank(query)) {
             query = "*:*";
@@ -192,9 +157,11 @@ public class DatasetController {
         }
         facetQueryModel.setQ(query);
         facetQueryModel.setFl(addDefaultFields(fields));
-        facetQueryModel.setFacet_field(facetfields);
+        if(StringUtils.isNotBlank(facetfields)) {
+            facetQueryModel.setFacet_field(facetfields);
+        }
         facetQueryModel.setFacet_limit(String.valueOf(facetcount));
-        return solrFacetService.getFacetEntriesByDomains(DEFAULT_SOLR_CORE, facetQueryModel);
+        return solrFacetService.getFacetEntriesByDomains(DEFAULT_SOLR_CORE, facetQueryModel,order,sortfield);
 
     }
 
@@ -211,7 +178,7 @@ public class DatasetController {
             @RequestParam(value = "size", required = false, defaultValue = "10") int size,
             @RequestParam(value = "facetcount", required = false, defaultValue = "20") int facetcount,
             @RequestParam(value = "facetfields", required = false) String facetfields,
-            @RequestParam(value = "sortedField", required = false) String sortedField,
+            @RequestParam(value = "sortfield", required = false) String sortfield,
             @RequestParam(value = "order", required = false, defaultValue = "ascending") String order,
             @RequestParam(value = "format", required = false, defaultValue = "JSON") String format
 
@@ -240,7 +207,7 @@ public class DatasetController {
         }
 
         if (StringUtils.isBlank(facetfields) && StringUtils.isNotBlank(fields)) {
-            facetQueryModel.setFacet_field(fields);
+            facetQueryModel.setFacet_field(DEFAULT_FACET_FIELD);
         }
 
 
@@ -248,26 +215,33 @@ public class DatasetController {
 
 
 
-        if (StringUtils.isNotBlank(sortedField) && StringUtils.isNotBlank(order)) {
 
-            String[] sorts = Arrays.stream(sortedField.split(",")).map(x -> {
-                x = x + " " + order;
-                return x;
-            }).toArray(String[]::new);
-            StringBuilder sb = new StringBuilder();
-            for (String sort : sorts) {
-                if (sb.length() == 0) {
-                    sb.append(sort);
-                } else {
-                    sb.append(",").append(sort);
-                }
-            }
-            facetQueryModel.setSort(sb.toString());
-        }
+//        if (StringUtils.isNotBlank(sortfield) && StringUtils.isNotBlank(order)) {
+//            if("descending".equalsIgnoreCase(order)) {
+//                order = "desc";
+//            }
+//            if("ascending".equalsIgnoreCase(order)) {
+//                order = "asc";
+//            }
+//            String orderCpoy = order;
+//            String[] sorts = Arrays.stream(sortfield.split(",")).map(x -> {
+//                x = x + "\\s" + orderCpoy;
+//                return x;
+//            }).toArray(String[]::new);
+//            StringBuilder sb = new StringBuilder();
+//            for (String sort : sorts) {
+//                if (sb.length() == 0) {
+//                    sb.append(sort);
+//                } else {
+//                    sb.append(",").append(sort);
+//                }
+//            }
+//            facetQueryModel.setSort(sb.toString());
+//        }
+//
+//        facetQueryModel.setWt(format);
 
-        facetQueryModel.setWt(format);
-
-        return solrEntryService.getQueryResult(domain, facetQueryModel);
+        return solrEntryService.getQueryResult(domain, facetQueryModel, order, sortfield);
     }
 
     @ApiOperation(value = "FacetWSClient getFacet")
@@ -292,7 +266,7 @@ public class DatasetController {
         facetQueryModel.setFacet_field(facetfields);
         facetQueryModel.setFacet_limit(facetcount);
         facetQueryModel.setRows(size);
-        return solrFacetService.getFacetEntriesByDomains(domain, facetQueryModel);
+        return solrFacetService.getFacetEntriesByDomains(domain, facetQueryModel,null, null);
     }
 
     // 对应DatasetWsClient getDatasetsById
@@ -329,7 +303,7 @@ public class DatasetController {
             facetQueryModel.setQ("database:" + domain + " AND id:" + "(" + entryids.replaceAll(",", " OR ") + ")");
             facetQueryModel.setFl(addDefaultFields(fields));
             facetQueryModel.setWt(format);
-            newQueryResult = solrEntryService.getQueryResult(domain, facetQueryModel);
+            newQueryResult = solrEntryService.getQueryResult(domain, facetQueryModel, null, null);
         }
         return newQueryResult;
     }
@@ -379,16 +353,18 @@ public class DatasetController {
             @RequestParam(value = "format", required = false, defaultValue = "") String format
     ) {
         MLTQueryModel mltQueryModel = new MLTQueryModel();
-        mltQueryModel.setQ("id:" + entryid + " AND " + "database:" + domain);
+        mltQueryModel.setQ("id:" + entryid
+//                + " AND " + "database:" + domain
+        );
         if(StringUtils.isNotBlank(mltfields)) {
             mltQueryModel.setMlt_fl(mltfields);
         }
-        mltQueryModel.setSort("score desc");
         if(StringUtils.isNotBlank(fields)) {
             mltQueryModel.setFl(addDefaultFields(fields) +",score");
         } else {
             mltQueryModel.setFl(addDefaultFields(mltfields)+",score");
         }
-        return solrCustomService.getSimilarResult(DEFAULT_SOLR_CORE, mltQueryModel);
+        mltQueryModel.setRows("20");
+        return solrCustomService.getSimilarResult(DEFAULT_SOLR_CORE, mltQueryModel, "desc", "score");
     }
 }

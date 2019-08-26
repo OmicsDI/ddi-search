@@ -22,7 +22,7 @@ public interface ISolrCustomService {
 
     SimilarResult getSimilarResult(String core, Map<String, String[]> paramMap);
 
-    SimilarResult getSimilarResult(String core, MLTQueryModel mltQueryModel);
+    SimilarResult getSimilarResult(String core, MLTQueryModel mltQueryModel, String order, String sortfield);
 
     TermResult getFrequentlyTerms(String core, TermsQueryModel termsQueryModel);
 }

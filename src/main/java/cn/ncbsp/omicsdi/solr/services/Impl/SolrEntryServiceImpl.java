@@ -13,6 +13,7 @@ import cn.ncbsp.omicsdi.solr.services.ISolrEntryService;
 import cn.ncbsp.omicsdi.solr.solrmodel.*;
 import cn.ncbsp.omicsdi.solr.util.SolrEntryUtil;
 import cn.ncbsp.omicsdi.solr.util.XmlHelper;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -24,6 +25,7 @@ import org.apache.solr.common.params.CoreAdminParams;
 import org.apache.solr.common.util.NamedList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.ac.ebi.ddi.service.db.service.database.DatabaseDetailService;
 
 import java.io.File;
 import java.io.IOException;
@@ -43,10 +45,13 @@ public class SolrEntryServiceImpl implements ISolrEntryService {
     private final
     SolrClient solrClient;
 
+    private final DatabaseDetailService databaseDetailService;
+
     @Autowired
-    public SolrEntryServiceImpl(SolrEntryRepo solrEntryRepo, SolrClient solrClient) {
+    public SolrEntryServiceImpl(SolrEntryRepo solrEntryRepo, SolrClient solrClient, DatabaseDetailService databaseDetailService) {
         this.solrEntryRepo = solrEntryRepo;
         this.solrClient = solrClient;
+        this.databaseDetailService = databaseDetailService;
     }
 
     @Override
@@ -161,10 +166,13 @@ public class SolrEntryServiceImpl implements ISolrEntryService {
     }
 
     @Override
-    public QueryResult getQueryResult(String domain, IQModel iqModel) {
+    public QueryResult getQueryResult(String domain, IQModel iqModel, String order, String sortfield) {
 
 
         SolrQuery solrQuery = SolrQueryBuilder.buildSolrQuery(iqModel);
+
+        SolrQueryBuilder.addSort(order, sortfield, solrQuery);
+
 
         QueryResponse queryResponse = null;
         try {
@@ -198,6 +206,9 @@ public class SolrEntryServiceImpl implements ISolrEntryService {
                 } else if (x.get(key) instanceof Date) {
                     String str = String.valueOf(x.get(key));
                     map.put(key, new String[]{str});
+                } else if (x.get(key) instanceof Double) {
+                    String str = String.valueOf(x.get(key));
+                    map.put(key, new String[]{str});
                 }
                 else {
                     ArrayList<String> list = (ArrayList<String>) x.get(key);
@@ -216,7 +227,7 @@ public class SolrEntryServiceImpl implements ISolrEntryService {
             Facet[] facets = queryResponse.getFacetFields().stream().map(x -> {
                 Facet facet = new Facet();
                 facet.setId(x.getName());
-                facet.setLabel(x.getName());
+                facet.setLabel(makeFirstUpperCase(x.getName()));
                 Long total = x.getValues().stream().mapToLong(FacetField.Count::getCount).sum();
                 facet.setTotal(Math.toIntExact(total));
                 FacetValue[] facetValues = x.getValues().stream().map(z -> {
@@ -263,5 +274,10 @@ public class SolrEntryServiceImpl implements ISolrEntryService {
         NamedList<Object> indexMap = (NamedList<Object>) coreStatus.get("omics").get("index");
         queryResult.setHitCount((Integer) indexMap.get("numDocs"));
         return queryResult;
+    }
+
+
+    public String makeFirstUpperCase(String string) {
+        return string.substring(0,1).toUpperCase()+string.substring(1);
     }
 }

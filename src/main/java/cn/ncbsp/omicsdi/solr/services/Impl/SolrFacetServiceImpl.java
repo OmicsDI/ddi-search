@@ -7,6 +7,7 @@ import cn.ncbsp.omicsdi.solr.solrmodel.Facet;
 import cn.ncbsp.omicsdi.solr.solrmodel.FacetList;
 import cn.ncbsp.omicsdi.solr.solrmodel.FacetValue;
 import cn.ncbsp.omicsdi.solr.solrmodel.NCBITaxonomy;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -37,12 +38,14 @@ public class SolrFacetServiceImpl implements ISolrFacetService {
 
 
     @Override
-    public FacetList getFacetEntriesByDomains(String core, FacetQueryModel facetQueryModel) {
+    public FacetList getFacetEntriesByDomains(String core, FacetQueryModel facetQueryModel, String order, String sortField) {
         if (facetQueryModel == null) {
             // todo exception
         }
         assert facetQueryModel != null;
         SolrQuery solrQuery = SolrQueryBuilder.buildSolrQuery(facetQueryModel);
+
+        SolrQueryBuilder.addSort(order, sortField, solrQuery);
 
         QueryResponse queryResponse = null;
         long foundNum = 0L;
@@ -51,9 +54,7 @@ public class SolrFacetServiceImpl implements ISolrFacetService {
             queryResponse = solrClient.query(core, solrQuery);
             foundNum = queryResponse.getResults().getNumFound();
             facetFieldList = queryResponse.getFacetFields();
-        } catch (SolrServerException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
+        } catch (SolrServerException | IOException e) {
             e.printStackTrace();
         }
 
