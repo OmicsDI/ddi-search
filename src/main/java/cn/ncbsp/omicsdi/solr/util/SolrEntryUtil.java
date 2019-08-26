@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 public class SolrEntryUtil {
-    public static List<SolrEntry> parseEntryToSolrEntry(List<Entry> list, String database) {
+    public static List<SolrEntry> parseEntryToSolrEntry(List<Entry> list, String database, String core) {
         List<SolrEntry> solrEntries = new ArrayList<SolrEntry>();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
         list.forEach(entry -> {
@@ -49,7 +49,7 @@ public class SolrEntryUtil {
                     }
                 });
             }
-            solrEntry.setDatabase(database);
+            solrEntry.setDatabase(core);
             solrEntry.setDomainSource(database);
             Map<String, List<String>> additionalMap = new HashMap<>();
             List<String> taxonomy = new ArrayList<>();

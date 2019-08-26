@@ -56,7 +56,7 @@ public class SolrEntryServiceImpl implements ISolrEntryService {
         assert database != null;
         Entries entries = database.getEntries();
         List<Entry> list = entries.getEntry();
-        List<SolrEntry> listSolrEntry = SolrEntryUtil.parseEntryToSolrEntry(list, database.getName().toLowerCase());
+        List<SolrEntry> listSolrEntry = SolrEntryUtil.parseEntryToSolrEntry(list, database.getName().toLowerCase(), core);
         solrEntryRepo.saveEntryList(core, listSolrEntry);
     }
 
@@ -93,7 +93,7 @@ public class SolrEntryServiceImpl implements ISolrEntryService {
         String core = Constans.Database.retriveSorlName(database.getName());
         Entries entries = database.getEntries();
         List<Entry> list = entries.getEntry();
-        List<SolrEntry> listSolrEntry = SolrEntryUtil.parseEntryToSolrEntry(list, database.getName().toLowerCase());
+        List<SolrEntry> listSolrEntry = SolrEntryUtil.parseEntryToSolrEntry(list, database.getName().toLowerCase(), core);
         solrEntryRepo.saveEntryList("omics", listSolrEntry);
         solrEntryRepo.saveEntryList(core, listSolrEntry);
     }
