@@ -2,6 +2,7 @@ package cn.ncbsp.omicsdi.solr.util;
 
 import cn.ncbsp.omicsdi.solr.queryModel.QueryModel;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.solr.client.solrj.SolrQuery;
 import org.springframework.data.solr.core.query.Criteria;
 import org.springframework.data.solr.core.query.FacetOptions;
 import org.springframework.data.solr.core.query.SimpleFacetQuery;
@@ -103,8 +104,6 @@ public class SolrQueryBuilder {
     简单facet查询
      */
 
-    public static void commonBuildQuery() {
 
-    }
 
 }

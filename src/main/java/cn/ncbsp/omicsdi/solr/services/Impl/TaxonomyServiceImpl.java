@@ -18,10 +18,10 @@ public class TaxonomyServiceImpl implements ITaxonomyService {
     SolrTemplate solrTemplate;
 
     @Override
-    public void loadTaxonData() {
+    public void loadTaxonData(String filePath) {
         InputStreamReader inputStreamReader = null;
         try {
-            inputStreamReader = new InputStreamReader(new FileInputStream("C:\\Users\\MS\\Desktop\\solr\\新建文件夹\\names.dmp"));
+            inputStreamReader = new InputStreamReader(new FileInputStream(filePath));
 
 
             BufferedReader bufferedReader = new BufferedReader(inputStreamReader);

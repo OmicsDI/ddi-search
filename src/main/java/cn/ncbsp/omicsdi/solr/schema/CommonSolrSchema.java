@@ -1,8 +1,5 @@
 package cn.ncbsp.omicsdi.solr.schema;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 public class CommonSolrSchema {
     private String name;
     private CommonSchemaTypeEnum type;

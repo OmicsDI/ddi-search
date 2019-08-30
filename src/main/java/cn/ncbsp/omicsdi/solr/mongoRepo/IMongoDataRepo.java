@@ -5,6 +5,9 @@ import org.springframework.data.mongodb.core.query.Query;
 
 import java.util.Map;
 
+/**
+ * @author Xpon
+ */
 public interface IMongoDataRepo {
     public Database getAllDatasets(Query query, String database);
 

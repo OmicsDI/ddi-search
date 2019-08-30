@@ -49,7 +49,7 @@ public class ImportJob {
 
     public void importData() {
         logger.debug("start");
-        iSolrEntryService.saveSolrEntries(folderPath, solrCore, backupPath);
+        iSolrEntryService.saveSolrEntries(folderPath, backupPath);
         logger.debug("end");
     }
 

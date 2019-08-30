@@ -62,7 +62,7 @@
     </bean>
 
     <bean id="solrClientBuilder" class="org.apache.solr.client.solrj.impl.HttpSolrClient.Builder">
-        <constructor-arg name="baseSolrUrl" value="http://192.168.99.25:33669/solr/"></constructor-arg>
+        <constructor-arg name="baseSolrUrl" value="http://106.38.63.153:33669/solr/"></constructor-arg>
     </bean>
 
     <bean id="solrTemplate" class="org.springframework.data.solr.core.SolrTemplate">

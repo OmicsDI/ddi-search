@@ -23,8 +23,8 @@ public class XmlHelper {
     }
 
     public static <T> StringWriter objectToXml(T t, String path, String databaseName) {
-        JAXBContext context = null;
-        Marshaller ms = null;
+        JAXBContext context;
+        Marshaller ms;
         StringWriter sw = new StringWriter();
         try {
             context = JAXBContext.newInstance(t.getClass());

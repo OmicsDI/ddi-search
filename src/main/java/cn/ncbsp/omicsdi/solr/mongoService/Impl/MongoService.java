@@ -12,6 +12,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.Map;
 
+/**
+ * @author Xpon
+ */
 @Service
 public class MongoService implements IMongoService {
 

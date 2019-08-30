@@ -1,6 +1,7 @@
 package cn.ncbsp.omicsdi.solr.solrmodel;
 
 import org.apache.solr.client.solrj.beans.Field;
+import org.apache.solr.common.SolrInputDocument;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.solr.core.mapping.SolrDocument;
 
@@ -9,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 @SolrDocument
-public class SolrEntry {
+public class SolrEntry{
     @Id
     @Field
     String id;

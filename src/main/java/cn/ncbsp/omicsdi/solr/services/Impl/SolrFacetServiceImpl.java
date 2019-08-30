@@ -58,16 +58,6 @@ public class SolrFacetServiceImpl implements ISolrFacetService {
             e.printStackTrace();
         }
 
-//        FacetList facetList = new FacetList();
-////        Facet[] facets = new Facet[facetFieldList.size()];
-////        for(int i = 0;i<facetFieldList.size();i++) {
-////            String facetName = solrQuery.getFacetFields()[i];
-////            Facet facet = new Facet();
-////            facet.setId(facetName);
-////            facet.setLabel(facetName);
-////            Long l = facetFieldList.stream().mapToLong(x -> x.getValues().stream().mapToLong( y -> y.getCount()).sum()).sum();
-////        }
-
         FacetList facetList = new FacetList();
         facetList.setHitCount(String.valueOf(foundNum));
 

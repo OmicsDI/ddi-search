@@ -12,7 +12,6 @@ public class SolrSchemaUtil {
         Map<String, Object> map = new ConcurrentHashMap<>();
         map.put("name", commonSolrSchema.getName());
         map.put("type", commonSolrSchema.getType().getTypeName());
-        map.put("defaultValue", commonSolrSchema.getDefaultValue());
         map.put("stored", commonSolrSchema.getStored());
         map.put("indexed", commonSolrSchema.getIndexed());
         return map;

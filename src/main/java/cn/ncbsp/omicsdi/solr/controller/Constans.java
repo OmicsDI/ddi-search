@@ -34,6 +34,7 @@ public class Constans {
         BIOMODELS2("BioModels","biomodels"),
         LINCS("LINCS","lincs"),
         PAXDB("PAXDB","paxdb"),
+        NODE("NODE","NODE"),
         JPOST("JPOST Repository","jpost");
 
         String databaseName;

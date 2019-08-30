@@ -10,6 +10,7 @@ import cn.ncbsp.omicsdi.solr.queryModel.QueryModel;
 import cn.ncbsp.omicsdi.solr.queryModel.SolrQueryBuilder;
 import cn.ncbsp.omicsdi.solr.repo.SolrEntryRepo;
 import cn.ncbsp.omicsdi.solr.services.ISolrEntryService;
+import cn.ncbsp.omicsdi.solr.services.ISolrSchemaService;
 import cn.ncbsp.omicsdi.solr.solrmodel.*;
 import cn.ncbsp.omicsdi.solr.util.SolrEntryUtil;
 import cn.ncbsp.omicsdi.solr.util.XmlHelper;
@@ -21,6 +22,7 @@ import org.apache.solr.client.solrj.request.CoreAdminRequest;
 import org.apache.solr.client.solrj.response.CoreAdminResponse;
 import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.QueryResponse;
+import org.apache.solr.common.SolrInputDocument;
 import org.apache.solr.common.params.CoreAdminParams;
 import org.apache.solr.common.util.NamedList;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,47 +47,16 @@ public class SolrEntryServiceImpl implements ISolrEntryService {
     private final
     SolrClient solrClient;
 
+    private final ISolrSchemaService solrSchemaService;
+
     private final DatabaseDetailService databaseDetailService;
 
     @Autowired
-    public SolrEntryServiceImpl(SolrEntryRepo solrEntryRepo, SolrClient solrClient, DatabaseDetailService databaseDetailService) {
+    public SolrEntryServiceImpl(SolrEntryRepo solrEntryRepo, SolrClient solrClient, DatabaseDetailService databaseDetailService, ISolrSchemaService solrSchemaService) {
         this.solrEntryRepo = solrEntryRepo;
         this.solrClient = solrClient;
         this.databaseDetailService = databaseDetailService;
-    }
-
-    @Override
-    public void saveSolrEntry(String xml, String core) {
-        Database database = new Database();
-        database = XmlHelper.xmlToObject(xml, database);
-        assert database != null;
-        Entries entries = database.getEntries();
-        List<Entry> list = entries.getEntry();
-        List<SolrEntry> listSolrEntry = SolrEntryUtil.parseEntryToSolrEntry(list, database.getName().toLowerCase(), core);
-        solrEntryRepo.saveEntryList(core, listSolrEntry);
-    }
-
-    @Override
-    public void saveSolrEntries(String folderPath, String core, String backupPath) {
-        File folder = new File(folderPath);
-        if (folder.exists()) {
-            File[] files = folder.listFiles();
-            if (files.length > 0) {
-                for (File file : files) {
-                    if (Pattern.matches(".*.xml", file.getName()) || Pattern.matches(".*.XML", file.getName())) {
-                        /*
-                        可以把所有的solrEntry给加到列表里，但是我总觉得占用内存太大，不如用一次再说下一次
-                         */
-                        this.saveSolrEntry(file.getAbsolutePath(), core);
-                        // 应该是移动到别的文件夹下留档
-                        file.renameTo(new File(backupPath + "\\" + file.getName()));
-                    } else {
-                        continue;
-                    }
-
-                }
-            }
-        }
+        this.solrSchemaService = solrSchemaService;
     }
 
 
@@ -93,14 +64,13 @@ public class SolrEntryServiceImpl implements ISolrEntryService {
     public void saveSolrEntry(String xml) {
         Database database = new Database();
         database = XmlHelper.xmlToObject(xml, database);
-
         assert database != null;
         String core = Constans.Database.retriveSorlName(database.getName());
         Entries entries = database.getEntries();
         List<Entry> list = entries.getEntry();
-        List<SolrEntry> listSolrEntry = SolrEntryUtil.parseEntryToSolrEntry(list, database.getName().toLowerCase(), core);
-        solrEntryRepo.saveEntryList("omics", listSolrEntry);
-        solrEntryRepo.saveEntryList(core, listSolrEntry);
+        List<SolrInputDocument> solrInputDocuments = solrSchemaService.parseEntryToSolrInputDocument(list, database.getName().toLowerCase(), core);
+        solrEntryRepo.saveEntryList("omics", solrInputDocuments);
+        solrEntryRepo.saveEntryList(core, solrInputDocuments);
     }
 
     @Override
@@ -167,13 +137,8 @@ public class SolrEntryServiceImpl implements ISolrEntryService {
 
     @Override
     public QueryResult getQueryResult(String domain, IQModel iqModel, String order, String sortfield) {
-
-
         SolrQuery solrQuery = SolrQueryBuilder.buildSolrQuery(iqModel);
-
         SolrQueryBuilder.addSort(order, sortfield, solrQuery);
-
-
         QueryResponse queryResponse = null;
         try {
             queryResponse = solrClient.query(domain, solrQuery);
@@ -194,27 +159,14 @@ public class SolrEntryServiceImpl implements ISolrEntryService {
             Map<String, String[]> map = new HashMap<>();
             Set<String> set = x.getFieldValueMap().keySet();
             for (String key : keys) {
-                if (x.get(key) instanceof String) {
-                    String str = (String) x.get(key);
-                    map.put(key, new String[]{str});
-                } else if (x.get(key) instanceof Long) {
-                    String str = String.valueOf(x.get(key));
-                    map.put(key, new String[]{str});
-                } else if (x.get(key) instanceof  Float) {
-                    String str = String.valueOf(x.get(key));
-                    map.put(key, new String[]{str});
-                } else if (x.get(key) instanceof Date) {
-                    String str = String.valueOf(x.get(key));
-                    map.put(key, new String[]{str});
-                } else if (x.get(key) instanceof Double) {
-                    String str = String.valueOf(x.get(key));
-                    map.put(key, new String[]{str});
-                }
-                else {
+                if (x.get(key) instanceof List) {
                     ArrayList<String> list = (ArrayList<String>) x.get(key);
                     String[] str = new String[list.size()];
                     str = list.toArray(str);
                     map.put(key, str);
+                } else {
+                    String str = String.valueOf(x.get(key));
+                    map.put(key, new String[]{str});
                 }
             }
             entry.setFields(map);
@@ -277,7 +229,7 @@ public class SolrEntryServiceImpl implements ISolrEntryService {
     }
 
 
-    public String makeFirstUpperCase(String string) {
+    private String makeFirstUpperCase(String string) {
         return string.substring(0,1).toUpperCase()+string.substring(1);
     }
 }

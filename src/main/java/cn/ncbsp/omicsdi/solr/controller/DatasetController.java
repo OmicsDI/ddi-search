@@ -213,34 +213,6 @@ public class DatasetController {
 
         facetQueryModel.setFacet_limit(String.valueOf(facetcount));
 
-
-
-
-//        if (StringUtils.isNotBlank(sortfield) && StringUtils.isNotBlank(order)) {
-//            if("descending".equalsIgnoreCase(order)) {
-//                order = "desc";
-//            }
-//            if("ascending".equalsIgnoreCase(order)) {
-//                order = "asc";
-//            }
-//            String orderCpoy = order;
-//            String[] sorts = Arrays.stream(sortfield.split(",")).map(x -> {
-//                x = x + "\\s" + orderCpoy;
-//                return x;
-//            }).toArray(String[]::new);
-//            StringBuilder sb = new StringBuilder();
-//            for (String sort : sorts) {
-//                if (sb.length() == 0) {
-//                    sb.append(sort);
-//                } else {
-//                    sb.append(",").append(sort);
-//                }
-//            }
-//            facetQueryModel.setSort(sb.toString());
-//        }
-//
-//        facetQueryModel.setWt(format);
-
         return solrEntryService.getQueryResult(domain, facetQueryModel, order, sortfield);
     }
 

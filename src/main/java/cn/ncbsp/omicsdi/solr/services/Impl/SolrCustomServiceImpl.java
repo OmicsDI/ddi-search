@@ -49,8 +49,8 @@ public class SolrCustomServiceImpl implements ISolrCustomService {
     @Autowired
     SolrEntryRepo solrEntryRepo;
 
-    @Autowired
-    SolrSuggestTemplate solrSuggestTemplate;
+//    @Autowired
+//    SolrSuggestTemplate solrSuggestTemplate;
 
 
     @Override

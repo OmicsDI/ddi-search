@@ -1,5 +1,9 @@
 package cn.ncbsp.omicsdi.solr.schema;
 
+/**
+ * @author Xpon
+ */
+
 public enum CommonSchemaTypeEnum {
     STRING("string"),
     STRINGS("strings"),

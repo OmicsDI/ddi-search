@@ -1,32 +1,143 @@
-package cn.ncbsp.omicsdi.solr.util;
+package cn.ncbsp.omicsdi.solr.services.Impl;
 
 import cn.ncbsp.omicsdi.solr.model.Entry;
+import cn.ncbsp.omicsdi.solr.schema.CommonSchemaTypeEnum;
+import cn.ncbsp.omicsdi.solr.schema.CommonSolrSchema;
 import cn.ncbsp.omicsdi.solr.services.ISolrSchemaService;
 import cn.ncbsp.omicsdi.solr.solrmodel.SolrEntry;
+import cn.ncbsp.omicsdi.solr.util.SolrSchemaUtil;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.time.DateUtils;
+import org.apache.solr.client.solrj.SolrClient;
+import org.apache.solr.client.solrj.SolrServerException;
+import org.apache.solr.client.solrj.request.schema.SchemaRequest;
+import org.apache.solr.client.solrj.response.schema.SchemaResponse;
 import org.apache.solr.common.SolrInputDocument;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-import java.text.ParseException;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
-public class SolrEntryUtil {
+@Service
+public class SolrSchemaServiceImpl implements ISolrSchemaService {
+
+    private final
+    SolrClient solrClient;
 
     @Autowired
-    ISolrSchemaService solrSchemaService;
+    public SolrSchemaServiceImpl(SolrClient solrClient) {
+        this.solrClient = solrClient;
+    }
 
+    @Override
+    public Integer autoGenerateField(String fieldName, String collection) {
+        CommonSolrSchema commonSolrSchema = new CommonSolrSchema();
+        commonSolrSchema.setName(fieldName);
+        commonSolrSchema.setType(CommonSchemaTypeEnum.STRINGS);
+        commonSolrSchema.setStored(true);
+        commonSolrSchema.setIndexed(true);
+        Map<String, Object> map = SolrSchemaUtil.getSolrSchemaMap(commonSolrSchema);
+        SchemaRequest.AddField addField = new SchemaRequest.AddField(map);
+        SchemaResponse.UpdateResponse schemaResponse = null;
+        try {
+            schemaResponse = addField.process(solrClient, collection);
+        } catch (SolrServerException | IOException e) {
+            e.printStackTrace();
+        }
+        assert schemaResponse != null;
+        if(schemaResponse.getStatus() == 0) {
+            try {
+                solrClient.commit(collection);
+            } catch (SolrServerException | IOException e) {
+                e.printStackTrace();
+            }
+            return 1;
+        } else {
+            try {
+                solrClient.rollback(collection);
+            } catch (SolrServerException | IOException e) {
+                e.printStackTrace();
+            }
+            return 0;
+        }
+    }
 
-    public static List<SolrEntry> parseEntryToSolrEntry(List<Entry> list, String database, String core) {
-        List<SolrEntry> solrEntries = new ArrayList<SolrEntry>();
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+    @Override
+    public Boolean checkFieldExists(String fieldName, String collection) {
+
+        SchemaRequest.Fields fields = new SchemaRequest.Fields();
+        SchemaResponse.FieldsResponse fieldsResponse = null;
+        try {
+            fieldsResponse = fields.process(solrClient, collection);
+        } catch (SolrServerException | IOException e) {
+            e.printStackTrace();
+        }
+        assert fieldsResponse != null;
+
+        List<Map<String, Object>> currentFields = fieldsResponse.getFields();
+
+        if(currentFields.stream().anyMatch(x -> x.get("name").toString().equalsIgnoreCase(fieldName))) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public List<String> getAllFields(String collection) {
+        SchemaRequest.Fields fields = new SchemaRequest.Fields();
+        SchemaResponse.FieldsResponse fieldsResponse = null;
+        try {
+            fieldsResponse = fields.process(solrClient, collection);
+        } catch (SolrServerException | IOException e) {
+            e.printStackTrace();
+        }
+        assert fieldsResponse != null;
+
+        List<Map<String, Object>> currentFields = fieldsResponse.getFields();
+        return currentFields.stream().map(x -> x.get("name").toString()).collect(Collectors.toList());
+    }
+
+    @Override
+    public Integer manuallyGenerateField(CommonSolrSchema commonSolrSchema, String collection) {
+        Map<String, Object> map = SolrSchemaUtil.getSolrSchemaMap(commonSolrSchema);
+        SchemaRequest.AddField addField = new SchemaRequest.AddField(map);
+        SchemaResponse.UpdateResponse schemaResponse = null;
+        try {
+            schemaResponse = addField.process(solrClient, collection);
+        } catch (SolrServerException | IOException e) {
+            e.printStackTrace();
+        }
+
+        assert schemaResponse != null;
+        if(schemaResponse.getStatus() == 0) {
+            try {
+                solrClient.commit(collection);
+            } catch (SolrServerException | IOException e) {
+                e.printStackTrace();
+            }
+            return 1;
+        } else {
+            try {
+                solrClient.rollback(collection);
+            } catch (SolrServerException | IOException e) {
+                e.printStackTrace();
+            }
+            return 0;
+        }
+    }
+
+    @Override
+    public List<SolrInputDocument> parseEntryToSolrInputDocument(List<Entry> list, String database, String core) {
+        List<SolrInputDocument> solrInputDocumentList = new ArrayList<>();
+        List<String> currentFieldName = getAllFields(core);
         list.forEach(entry -> {
             SolrEntry solrEntry = new SolrEntry();
-
             solrEntry.setId(entry.getId());
             solrEntry.setAcc(entry.getAcc());
             solrEntry.setName(entry.getName().getValue());// ???
@@ -77,14 +188,14 @@ public class SolrEntryUtil {
                 } else if (reference.getDbkey().equalsIgnoreCase("pubmed")) {
                     pubmed.add(reference.getDbname());
                 } else {
-                    if (null == additionalMap.get("additional_" + reference.getDbkey())) {
+                    if (null == additionalMap.get(reference.getDbkey())) {
                         List<String> listForMap = new ArrayList<>();
                         listForMap.add(reference.getDbname());
-                        additionalMap.put("additional_" + reference.getDbkey(), listForMap);
+                        additionalMap.put(reference.getDbkey(), listForMap);
                     } else {
-                        List<String> listField = additionalMap.get("additional_" + reference.getDbkey());
+                        List<String> listField = additionalMap.get(reference.getDbkey());
                         listField.add(reference.getDbname());
-                        additionalMap.put("additional_" + reference.getDbkey(), listField);
+                        additionalMap.put(reference.getDbkey(), listField);
                     }
                 }
             });
@@ -292,14 +403,14 @@ public class SolrEntryUtil {
                         break;
                     //?????
                     default:
-                        if (null == additionalMap.get("additional_" + field.getName())) {
+                        if (null == additionalMap.get(field.getName())) {
                             List<String> listForMap = new ArrayList<>();
                             listForMap.add(field.getValue());
-                            additionalMap.put("additional_" + field.getName(), listForMap);
+                            additionalMap.put(field.getName(), listForMap);
                         } else {
-                            List<String> listField = additionalMap.get("additional_" + field.getName());
+                            List<String> listField = additionalMap.get(field.getName());
                             listField.add(field.getValue());
-                            additionalMap.put("additional_" + field.getName(), listField);
+                            additionalMap.put(field.getName(), listField);
                         }
                         break;
                 }
@@ -347,14 +458,29 @@ public class SolrEntryUtil {
             solrEntry.setOmicsType(omicsTypes);
             solrEntry.setSubmitterKeywords(submitterKeywords);
             solrEntry.setCuratorKeywords(curatorKeywords);
-            solrEntry.setAdditionalFields(additionalMap);
+//            solrEntry.setAdditionalFields(additionalMap);
             if (StringUtils.isBlank(solrEntry.getPubmedAbstract())) {
                 solrEntry.setPubmedAbstract("Not Availiable");
             }
-            solrEntries.add(solrEntry);
+//            solrEntries.add(solrEntry);
+            SolrInputDocument solrInputDocument = solrClient.getBinder().toSolrInputDocument(solrEntry);
+            if (additionalMap.size() > 0) {
+               additionalMap.keySet().forEach(key -> {
+                   List<String> datas = additionalMap.get(key);
+                   if(currentFieldName.stream().noneMatch(name -> name.equalsIgnoreCase(key))) {
+                       autoGenerateField(key, core);
+                       autoGenerateField(key, "omics");
+                       currentFieldName.add(key);
+                       solrInputDocument.addField(key, datas);
+                   }else {
+                       solrInputDocument.addField(key, datas);
+                   }
+               });
+            }
+            solrInputDocumentList.add(solrInputDocument);
+
         });
 
-        return solrEntries;
+        return solrInputDocumentList;
     }
-
 }

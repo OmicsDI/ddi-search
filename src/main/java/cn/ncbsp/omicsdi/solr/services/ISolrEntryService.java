@@ -11,9 +11,9 @@ import java.util.List;
  * @author Xpon
  */
 public interface ISolrEntryService<T> {
-    void saveSolrEntry(String xml, String core);
-
-    void saveSolrEntries(String folderPath, String core, String backupPath);
+//    void saveSolrEntry(String xml, String core);
+//
+//    void saveSolrEntries(String folderPath, String core, String backupPath);
 
     void saveSolrEntry(String xml);
 
