@@ -12,6 +12,8 @@
                           http://www.springframework.org/schema/data/mongo http://www.springframework.org/schema/data/mongo/spring-mongo-2.0.xsd"
        default-lazy-init="true">
 
+    <import resource="quartzJob.xml"></import>
+
     <!-- 配置扫描controller -->
     <context:component-scan base-package="cn.ncbsp.omicsdi.solr"/>
     <mongo:repositories     base-package="uk.ac.ebi.ddi.service.db.repo" />

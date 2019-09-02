@@ -6,6 +6,7 @@ import cn.ncbsp.omicsdi.solr.schema.CommonSolrSchema;
 import cn.ncbsp.omicsdi.solr.services.ISolrSchemaService;
 import cn.ncbsp.omicsdi.solr.solrmodel.SolrEntry;
 import cn.ncbsp.omicsdi.solr.util.SolrSchemaUtil;
+import jdk.nashorn.internal.objects.annotations.Property;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -13,6 +14,7 @@ import org.apache.solr.client.solrj.request.schema.SchemaRequest;
 import org.apache.solr.client.solrj.response.schema.SchemaResponse;
 import org.apache.solr.common.SolrInputDocument;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -25,6 +27,13 @@ import java.util.stream.Collectors;
 
 @Service
 public class SolrSchemaServiceImpl implements ISolrSchemaService {
+
+    @Value("${ddi.search.user}")
+    private String solrUserName;
+
+    @Value("${ddi.search.password}")
+    private String solrPassword;
+
 
     private final
     SolrClient solrClient;
@@ -43,6 +52,7 @@ public class SolrSchemaServiceImpl implements ISolrSchemaService {
         commonSolrSchema.setIndexed(true);
         Map<String, Object> map = SolrSchemaUtil.getSolrSchemaMap(commonSolrSchema);
         SchemaRequest.AddField addField = new SchemaRequest.AddField(map);
+        addField.setBasicAuthCredentials(solrUserName, solrPassword);
         SchemaResponse.UpdateResponse schemaResponse = null;
         try {
             schemaResponse = addField.process(solrClient, collection);
@@ -71,6 +81,7 @@ public class SolrSchemaServiceImpl implements ISolrSchemaService {
     public Boolean checkFieldExists(String fieldName, String collection) {
 
         SchemaRequest.Fields fields = new SchemaRequest.Fields();
+        fields.setBasicAuthCredentials(solrUserName, solrPassword);
         SchemaResponse.FieldsResponse fieldsResponse = null;
         try {
             fieldsResponse = fields.process(solrClient, collection);
@@ -91,6 +102,7 @@ public class SolrSchemaServiceImpl implements ISolrSchemaService {
     @Override
     public List<String> getAllFields(String collection) {
         SchemaRequest.Fields fields = new SchemaRequest.Fields();
+        fields.setBasicAuthCredentials(solrUserName, solrPassword);
         SchemaResponse.FieldsResponse fieldsResponse = null;
         try {
             fieldsResponse = fields.process(solrClient, collection);
@@ -107,6 +119,7 @@ public class SolrSchemaServiceImpl implements ISolrSchemaService {
     public Integer manuallyGenerateField(CommonSolrSchema commonSolrSchema, String collection) {
         Map<String, Object> map = SolrSchemaUtil.getSolrSchemaMap(commonSolrSchema);
         SchemaRequest.AddField addField = new SchemaRequest.AddField(map);
+        addField.setBasicAuthCredentials(solrUserName, solrPassword);
         SchemaResponse.UpdateResponse schemaResponse = null;
         try {
             schemaResponse = addField.process(solrClient, collection);
