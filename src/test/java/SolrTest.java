@@ -1,4 +1,6 @@
+import cn.ncbsp.omicsdi.solr.controller.Constans;
 import cn.ncbsp.omicsdi.solr.model.*;
+import cn.ncbsp.omicsdi.solr.model.Suggestion;
 import cn.ncbsp.omicsdi.solr.mongoRepo.IMongoDataRepo;
 import cn.ncbsp.omicsdi.solr.mongoRepo.mongoModel.Dataset;
 import cn.ncbsp.omicsdi.solr.mongoService.IMongoService;
@@ -11,19 +13,18 @@ import cn.ncbsp.omicsdi.solr.solrmodel.*;
 import cn.ncbsp.omicsdi.solr.util.SolrQueryBuilder;
 import cn.ncbsp.omicsdi.solr.util.XmlHelper;
 import com.alibaba.fastjson.JSON;
-import org.apache.commons.lang3.time.DateUtils;
-import org.apache.solr.client.solrj.SolrQuery;
-import org.apache.solr.client.solrj.SolrResponse;
-import org.apache.solr.client.solrj.SolrServerException;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.fasterxml.jackson.databind.node.TextNode;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.solr.client.solrj.*;
 import org.apache.solr.client.solrj.impl.HttpSolrClient;
 import org.apache.solr.client.solrj.request.CoreAdminRequest;
+import org.apache.solr.client.solrj.request.GenericSolrRequest;
 import org.apache.solr.client.solrj.request.LukeRequest;
+import org.apache.solr.client.solrj.request.RequestWriter;
 import org.apache.solr.client.solrj.request.schema.SchemaRequest;
-import org.apache.solr.client.solrj.response.CoreAdminResponse;
-import org.apache.solr.client.solrj.response.LukeResponse;
-import org.apache.solr.client.solrj.response.QueryResponse;
-import org.apache.solr.client.solrj.response.UpdateResponse;
-import org.apache.solr.client.solrj.response.schema.SchemaRepresentation;
+import org.apache.solr.client.solrj.response.*;
 import org.apache.solr.client.solrj.response.schema.SchemaResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
@@ -39,6 +40,8 @@ import org.springframework.data.solr.core.SolrTemplate;
 import org.springframework.data.solr.core.query.*;
 import org.springframework.data.solr.core.query.result.FacetPage;
 import org.springframework.data.solr.core.query.result.SolrResultPage;
+import org.springframework.data.solr.core.schema.SolrJsonRequest;
+import org.springframework.data.solr.core.schema.SolrJsonResponse;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -47,12 +50,10 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import java.io.*;
 import java.lang.reflect.Field;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Date;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.lang.reflect.Field;
 
 //import cn.ncbsp.omicsdi.solr.repo.MoneyRepo;
 
@@ -67,8 +68,8 @@ public class SolrTest extends AbstractJUnit4SpringContextTests {
 //    @Autowired
 //    MoneyRepo moneyRepo;
 
-    @Autowired
-    IDatabaseService databaseService;
+//    @Autowired
+//    IDatabaseService databaseService;
     @Autowired
     HttpSolrClient solrClient;
     @Autowired
@@ -84,10 +85,10 @@ public class SolrTest extends AbstractJUnit4SpringContextTests {
 //    }
     @Autowired
     SolrEntryRepo solrEntryRepo;
-    @Autowired
-    IDomainSearchService domainSearchService;
-    @Autowired
-    IAutocompleteService autocompleteService;
+//    @Autowired
+//    IDomainSearchService domainSearchService;
+//    @Autowired
+//    IAutocompleteService autocompleteService;
     @Autowired
     ISolrCustomService solrCustomService;
     @Autowired
@@ -229,7 +230,7 @@ public class SolrTest extends AbstractJUnit4SpringContextTests {
             });
         });
 
-        databaseService.indexSolrData("omicsdi", solrInputDocument);
+//        databaseService.indexSolrData("omicsdi", solrInputDocument);
 
 
     }
@@ -300,17 +301,17 @@ public class SolrTest extends AbstractJUnit4SpringContextTests {
         System.out.println("ok");
         System.gc();
     }
-
-    @Test
-    public void test12() {
-        solrEntryRepo.getQueryResult("omicsdi", new SimpleQuery(new Criteria().where("id").contains("PXD").and("name").isNotNull()), new SolrEntry().getClass());
-        System.out.println();
-    }
-
-    @Test
-    public void test13() {
-        solrEntryRepo.getFacetQueryResult("omicsdi", new SimpleFacetQuery(new Criteria().where("id").in(new String[]{"PXD000025", "PXD004655"})).setFacetOptions(new FacetOptions("database")), SolrEntry.class);
-    }
+//
+//    @Test
+//    public void test12() {
+//        solrEntryRepo.getQueryResult("omicsdi", new SimpleQuery(new Criteria().where("id").contains("PXD").and("name").isNotNull()), new SolrEntry().getClass());
+//        System.out.println();
+//    }
+//
+//    @Test
+//    public void test13() {
+//        solrEntryRepo.getFacetQueryResult("omicsdi", new SimpleFacetQuery(new Criteria().where("id").in(new String[]{"PXD000025", "PXD004655"})).setFacetOptions(new FacetOptions("database")), SolrEntry.class);
+//    }
 
     @Test
     public void test14() {
@@ -406,7 +407,7 @@ public class SolrTest extends AbstractJUnit4SpringContextTests {
         queryModel.setQuery("*:*");
         queryModel.setFacets(new String[]{"database", "additional_submitter"});
         queryModel.setFacetcount(6);
-        domainSearchService.getQueryResult(queryModel);
+//        domainSearchService.getQueryResult(queryModel);
     }
 
     @Test
@@ -497,7 +498,7 @@ public class SolrTest extends AbstractJUnit4SpringContextTests {
 
     @Test
     public void testSuggestService() {
-        Suggestions suggestions = autocompleteService.getSuggestions("omicsdi", "an", Suggestion.class);
+//        Suggestions suggestions = autocompleteService.getSuggestions("omicsdi", "an", Suggestion.class);
         System.out.println("a");
     }
 
@@ -1210,7 +1211,7 @@ public class SolrTest extends AbstractJUnit4SpringContextTests {
 
     @Test
     public void testsolrssss() {
-        iSolrEntryService.saveSolrEntry("C:\\Users\\MS\\Desktop\\solr\\solrTest\\15452046331109.xml", "peptide_atlas");
+//        iSolrEntryService.saveSolrEntry("C:\\Users\\MS\\Desktop\\solr\\solrTest\\15452046331109.xml", "peptide_atlas");
     }
 
 
@@ -1374,4 +1375,198 @@ public class SolrTest extends AbstractJUnit4SpringContextTests {
 //            e.printStackTrace();
 //        }
     }
+
+    @Autowired
+    ISolrSchemaService solrSchemaService;
+
+
+    @Test
+    public void autoGeneratorofSchema() {
+        solrSchemaService.checkFieldExists("accession", "omics");
+    }
+
+    @Test
+    public void autoDocument() {
+        SolrInputDocument solrInputDocument = new SolrInputDocument();
+        solrInputDocument.addField("id", "test-01-01");
+        UpdateResponse updateResponse = null;
+        try {
+            updateResponse = solrClient.add("atlas-experiments", solrInputDocument);
+            updateResponse = solrClient.commit("atlas-experiments");
+        } catch (SolrServerException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println("xx");
+    }
+
+    @Test
+    public void beanToSolrDoc() {
+        SolrEntry solrEntry = new SolrEntry();
+        solrEntry.setId("aaa-01-03");
+        solrEntry.setDescriptionSynonyms("fddfdfsasdfdfdsasdfdsasdf");
+        List<String> omicsType = new ArrayList<String>();
+        omicsType.add("asdf");
+        omicsType.add("asdfdsa");
+        solrEntry.setOmicsType(omicsType);
+
+        SolrInputDocument solrInputDocument = solrClient.getBinder().toSolrInputDocument(solrEntry);
+        System.out.println("xxxx");
+//        try {
+//            solrClient.addBean("atlas-experiments", solrEntry);
+//            solrClient.commit("atlas-experiments");
+//        } catch (IOException | SolrServerException e) {
+//            e.printStackTrace();
+//        }
+//        System.out.println("xxxx");
+
+    }
+
+
+    @Test
+    public void newSolrdocsave() {
+//        File file = new File("D:\\self-support_20190816.xml");
+        Database database = new Database();
+        database = XmlHelper.xmlToObject("D:\\NODE_self-support_20190823.xml", database);
+        assert database != null;
+        String core = Constans.Database.retriveSorlName(database.getName());
+        Entries entries = database.getEntries();
+        List<cn.ncbsp.omicsdi.solr.model.Entry> list = entries.getEntry();
+        List<SolrInputDocument> solrInputDocuments = solrSchemaService.parseEntryToSolrInputDocument(list, database.getName().toLowerCase(), core);
+        solrEntryRepo.saveEntryList("omics", solrInputDocuments);
+        solrEntryRepo.saveEntryList(core, solrInputDocuments);
+    }
+
+
+    @Test
+    public void stopwordsTest() {
+//        StopwordsRequest stopwordsRequest = new StopwordsRequest(SolrRequest.METHOD.PUT, "/schema/analysis/stopwords/english");
+//        stopwordsRequest.addContentToStream("aaa");
+//        stopwordsRequest.setBasicAuthCredentials("solr", "OmicsDI@Solr@2019");
+//        solrClient.setRequestWriter(new RequestWriter(){
+//            @Override
+//            public ContentWriter getContentWriter(SolrRequest req) {
+//                return new ContentWriter() {
+//                    @Override
+//                    public void write(OutputStream os) throws IOException {
+//                        JavaBinCodec javaBinCodec = new JavaBinCodec();
+//                        javaBinCodec.marshal(req, os);
+//                    }
+//
+//                    @Override
+//                    public String getContentType() {
+//                        return "application/json;charset=utf-8";
+//                    }
+//                };
+//            }
+//        });
+//        try {
+//            SolrResponse solrResponse = stopwordsRequest.process(solrClient, "NODE");
+//            System.out.println("xxx");
+//        } catch (SolrServerException | IOException e) {
+//            e.printStackTrace();
+//        }
+//        SolrJsonRequest solrJsonRequest = new SolrJsonRequest(SolrJsonRequest.METHOD.PUT, "/schema/analysis/stopwords/english");
+//        List<String> stopwords = new ArrayList<>();
+//        stopwords.add("balabala");
+//        Object ok = JSONObject.toJSON(stopwords);
+//        solrJsonRequest.addContentToStream(stopwords);
+//        solrJsonRequest.setBasicAuthCredentials("solr", "OmicsDI@Solr@2019");
+//        try {
+//            solrJsonRequest.process(solrClient, "NODE");
+//
+//            System.out.println("xxx");
+//        } catch (SolrServerException e) {
+//            e.printStackTrace();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+
+
+//        SolrJsonRequest solrJsonRequest2 = new SolrJsonRequest(SolrJsonRequest.METHOD.GET, "/schema/analysis/stopwords/english");
+//        solrJsonRequest2.setBasicAuthCredentials("solr", "OmicsDI@Solr@2019");
+//        try {
+//            solrClient.request(solrJsonRequest2, "NODE");
+////            SolrJsonResponse solrJsonResponse = solrJsonRequest2.process(solrClient, "NODE");
+//            System.out.println("xxx");
+//        } catch (SolrServerException e) {
+//            e.printStackTrace();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+
+        GenericSolrRequest genericSolrRequest = new GenericSolrRequest(SolrRequest.METHOD.PUT, "/schema/analysis/stopwords/english", null);
+
+
+//        List<String> stopwords = new ArrayList<>();
+//        stopwords.add("casdfasdkljfkasdjf");
+//        String ok = JSONObject.toJSON(stopwords).toString();
+//        JSONArray jsonObject = JSONObject.parseArray(str);
+//        String ok = jsonObject.toJSONString();
+//        genericSolrRequest.setContentWriter(new RequestWriter.StringPayloadContentWriter(ok, "application/json;charset=utf-8"));
+
+        genericSolrRequest.setBasicAuthCredentials("solr", "OmicsDI@Solr@2019");
+
+        genericSolrRequest.setResponseParser(new DelegationTokenResponse.JsonMapResponseParser());
+
+        ArrayList<String> oks = new ArrayList<>();
+        oks.add("asdf1234");
+        oks.add("balabala1234");
+        oks.add("casdfasdkljfkasdjf1234");
+        oks.add("ccc1234");
+
+        String str = JSONArray.toJSONString(oks);
+        genericSolrRequest.setContentWriter(new RequestWriter.StringPayloadContentWriter(str, "application/json;charset=utf-8"));
+
+        try {
+            SimpleSolrResponse simpleSolrResponse = genericSolrRequest.process(solrClient, "NODE");
+            LinkedHashMap<String, Object> map = (LinkedHashMap<String, Object>) simpleSolrResponse.getResponse().get("responseHeader");
+            Object o = map.get("status");
+
+            if(String.valueOf(o).equalsIgnoreCase("0")) {
+                System.out.println("lklklklkl");
+            }
+            System.out.println("xxx");
+        } catch (SolrServerException | IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

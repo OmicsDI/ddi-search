@@ -78,13 +78,14 @@ public class DatasetController {
     TermResult getFrequentlyTerms(
             @PathVariable(value = "domain") String domain,
             @PathVariable(value = "fieldid") String fieldid,
-            @RequestParam(value = "size", required = false) String size
+            @RequestParam(value = "size", required = false) String size,
+            @RequestParam(value = "excludes", required = false) String exclusionWords
 
     ) {
         TermsQueryModel termsQueryModel = new TermsQueryModel();
         termsQueryModel.setTerms_fl(fieldid);
         termsQueryModel.setTerms_limit(size);
-        return solrCustomService.getFrequentlyTerms(domain, termsQueryModel);
+        return solrCustomService.getFrequentlyTerms(domain, termsQueryModel, exclusionWords);
     }
 
     //https://www.ebi.ac.uk/ebisearch/ws/rest/omics?format=JSON

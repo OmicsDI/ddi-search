@@ -24,5 +24,5 @@ public interface ISolrCustomService {
 
     SimilarResult getSimilarResult(String core, MLTQueryModel mltQueryModel, String order, String sortfield);
 
-    TermResult getFrequentlyTerms(String core, TermsQueryModel termsQueryModel);
+    TermResult getFrequentlyTerms(String core, TermsQueryModel termsQueryModel, String excludeWords);
 }

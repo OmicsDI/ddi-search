@@ -6,6 +6,7 @@ import cn.ncbsp.omicsdi.solr.queryModel.SolrQueryBuilder;
 import cn.ncbsp.omicsdi.solr.queryModel.SuggestQueryModel;
 import cn.ncbsp.omicsdi.solr.queryModel.TermsQueryModel;
 import cn.ncbsp.omicsdi.solr.repo.SolrEntryRepo;
+import cn.ncbsp.omicsdi.solr.repo.SolrSchemaRepo;
 import cn.ncbsp.omicsdi.solr.services.ISolrCustomService;
 import cn.ncbsp.omicsdi.solr.solrTool.SolrSuggestTemplate;
 import cn.ncbsp.omicsdi.solr.solrmodel.Entry;
@@ -26,11 +27,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 
 /**
@@ -48,6 +47,9 @@ public class SolrCustomServiceImpl implements ISolrCustomService {
 
     @Autowired
     SolrEntryRepo solrEntryRepo;
+
+    @Autowired
+    SolrSchemaRepo solrSchemaRepo;
 
 //    @Autowired
 //    SolrSuggestTemplate solrSuggestTemplate;
@@ -184,9 +186,13 @@ public class SolrCustomServiceImpl implements ISolrCustomService {
     }
 
     @Override
-    public TermResult getFrequentlyTerms(String core, TermsQueryModel termsQueryModel) {
+    public TermResult getFrequentlyTerms(String core, TermsQueryModel termsQueryModel, String excludwords) {
 
         SolrQuery solrQuery = SolrQueryBuilder.buildSolrQuery(termsQueryModel);
+
+        if(StringUtils.isNotBlank(excludwords)) {
+            saveNewStopWords(core, excludwords);
+        }
 
         QueryResponse queryResponse;
         TermsResponse termsResponse = null;
@@ -216,5 +222,14 @@ public class SolrCustomServiceImpl implements ISolrCustomService {
 
 
         return termResult;
+    }
+
+    public void saveNewStopWords(String core, String excludwords) {
+        List<String> currentStopWords = solrSchemaRepo.getAllExcludeWords(core);
+        List<String> wantedStopWords = Arrays.asList(excludwords.split(","));
+        List<String> newStopWords = wantedStopWords.stream().filter(x -> !currentStopWords.contains(x)).collect(Collectors.toList());
+        if(newStopWords!= null && newStopWords.size() > 0) {
+            solrSchemaRepo.saveExcludeWords(newStopWords, core);
+        }
     }
 }
