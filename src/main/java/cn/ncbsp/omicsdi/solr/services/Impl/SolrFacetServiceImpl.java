@@ -2,6 +2,7 @@ package cn.ncbsp.omicsdi.solr.services.Impl;
 
 import cn.ncbsp.omicsdi.solr.queryModel.FacetQueryModel;
 import cn.ncbsp.omicsdi.solr.queryModel.SolrQueryBuilder;
+import cn.ncbsp.omicsdi.solr.services.IEBISearchTaxonomyService;
 import cn.ncbsp.omicsdi.solr.services.ISolrFacetService;
 import cn.ncbsp.omicsdi.solr.solrmodel.Facet;
 import cn.ncbsp.omicsdi.solr.solrmodel.FacetList;
@@ -35,6 +36,9 @@ public class SolrFacetServiceImpl implements ISolrFacetService {
 
     @Autowired
     SolrEntryServiceImpl solrEntryService;
+
+    @Autowired
+    IEBISearchTaxonomyService iebiSearchTaxonomyService;
 
 
     @Override
@@ -77,7 +81,8 @@ public class SolrFacetServiceImpl implements ISolrFacetService {
             }).toArray(FacetValue[]::new);
 
             if ("TAXONOMY".equalsIgnoreCase(facetQueryModel.getFacet_field())) {
-                List<NCBITaxonomy> ncbiTaxonomyList = solrEntryService.getNCBITaxonomyData(Arrays.stream(facetValues).map(FacetValue::getLabel).toArray(String[]::new));
+
+                List<NCBITaxonomy> ncbiTaxonomyList = iebiSearchTaxonomyService.getNCBITaxonomyData(Arrays.stream(facetValues).map(FacetValue::getLabel).toArray(String[]::new));
                 Map<String, String> map = new ConcurrentHashMap<>();
                 ncbiTaxonomyList.forEach(z -> map.put(z.getTaxId(), z.getNameTxt()));
                 for (FacetValue facetValue : facetValues) {
