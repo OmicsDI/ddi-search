@@ -19,6 +19,7 @@ import com.fasterxml.jackson.databind.node.TextNode;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.solr.client.solrj.*;
 import org.apache.solr.client.solrj.impl.HttpSolrClient;
+import org.apache.solr.client.solrj.impl.SolrHttpRequestRetryHandler;
 import org.apache.solr.client.solrj.request.CoreAdminRequest;
 import org.apache.solr.client.solrj.request.GenericSolrRequest;
 import org.apache.solr.client.solrj.request.LukeRequest;
@@ -1569,4 +1570,20 @@ public class SolrTest extends AbstractJUnit4SpringContextTests {
 
 
 
+
+    @Test
+    public void testUpdateSOlrDoc() {
+        SolrInputDocument solrInputDocument = new SolrInputDocument();
+        solrInputDocument.addField("id", "*");
+        solrInputDocument.addField("database" ,"omics_ena_project");
+        try {
+            UpdateResponse updateResponse = solrClient.add("omics_ena_project", solrInputDocument);
+        } catch (SolrServerException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println("123123");
+    }
 }

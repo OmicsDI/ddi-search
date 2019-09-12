@@ -8,4 +8,9 @@ public class quartzTest {
         AbstractApplicationContext context = new ClassPathXmlApplicationContext("springMVC/quartzJob.xml");
         Thread.sleep(60000);
     }
+
+    @Test
+    public void testReactome() {
+
+    }
 }
