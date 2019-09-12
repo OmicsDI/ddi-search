@@ -1539,7 +1539,13 @@ public class SolrTest extends AbstractJUnit4SpringContextTests {
 
 
 
+    @Autowired
+    IEBISearchTaxonomyService iebiSearchTaxonomyService;
 
+    @Test
+    public void testebisearchhttpclient() {
+        iebiSearchTaxonomyService.getNCBITaxonomyData("9606");
+    }
 
 
 
