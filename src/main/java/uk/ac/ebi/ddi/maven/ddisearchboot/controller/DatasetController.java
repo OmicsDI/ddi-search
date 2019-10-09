@@ -1,5 +1,6 @@
 package uk.ac.ebi.ddi.maven.ddisearchboot.controller;
 
+import org.springframework.stereotype.Controller;
 import uk.ac.ebi.ddi.maven.ddisearchboot.model.mongo.DomainList;
 import uk.ac.ebi.ddi.maven.ddisearchboot.model.mongo.Suggestions;
 import uk.ac.ebi.ddi.maven.ddisearchboot.model.queryModel.FacetQueryModel;
@@ -26,7 +27,7 @@ import java.util.regex.Pattern;
 /**
  * @author Xpon
  */
-@RestController
+@Controller
 @RequestMapping(value = "/")
 public class DatasetController {
 
@@ -318,7 +319,7 @@ public class DatasetController {
             @RequestParam(value = "fields", required = false, defaultValue = "") String fields,
             @RequestParam(value = "excludesets", required = false, defaultValue = "") String excludesets,
             @RequestParam(value = "entryattrs", required = false, defaultValue = "") String entryattrs,
-            @RequestParam(value = "format", required = false, defaultValue = "") String format
+            @RequestParam(value = "format", required = false, defaultValue = "JSON") String format
     ) {
         MLTQueryModel mltQueryModel = new MLTQueryModel();
         mltQueryModel.setQ("id:" + entryid
@@ -333,6 +334,7 @@ public class DatasetController {
             mltQueryModel.setFl(addDefaultFields(mltfields)+",score");
         }
         mltQueryModel.setRows("20");
+        mltQueryModel.setWt("json");
         return solrCustomService.getSimilarResult(DEFAULT_SOLR_CORE, mltQueryModel, "desc", "score");
     }
 }

@@ -19,7 +19,7 @@ spring:
   data:
     mongodb:
       uri: mongodb://ddi_user:V5f3SThe@193.62.55.69:30304/admin
-#      database: ddi_db
+      database: ddi_db
 
 
 

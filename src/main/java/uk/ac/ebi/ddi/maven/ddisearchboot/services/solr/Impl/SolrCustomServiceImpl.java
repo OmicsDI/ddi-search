@@ -1,5 +1,12 @@
 package uk.ac.ebi.ddi.maven.ddisearchboot.services.solr.Impl;
 
+import com.alibaba.fastjson.JSONArray;
+import org.apache.solr.client.solrj.SolrRequest;
+import org.apache.solr.client.solrj.request.GenericSolrRequest;
+import org.apache.solr.client.solrj.request.RequestWriter;
+import org.apache.solr.client.solrj.response.DelegationTokenResponse;
+import org.apache.solr.client.solrj.response.SimpleSolrResponse;
+import org.springframework.beans.factory.annotation.Value;
 import uk.ac.ebi.ddi.maven.ddisearchboot.model.mongo.Suggestions;
 import uk.ac.ebi.ddi.maven.ddisearchboot.model.mongo.Suggestion;
 import uk.ac.ebi.ddi.maven.ddisearchboot.model.queryModel.MLTQueryModel;
@@ -44,6 +51,12 @@ public class SolrCustomServiceImpl implements ISolrCustomService {
 
     @Autowired
     SolrClient solrClient;
+
+    @Value("${ddi.search.user}")
+    private String solrUserName;
+
+    @Value("${ddi.search.password}")
+    private String solrPassword;
 
     @Autowired
     SolrEntryRepo solrEntryRepo;
@@ -149,14 +162,16 @@ public class SolrCustomServiceImpl implements ISolrCustomService {
 
         SolrQueryBuilder.addSort(order, sortfield, solrQuery);
 
-        QueryResponse queryResponse = null;
+        GenericSolrRequest genericSolrRequest = new GenericSolrRequest(SolrRequest.METHOD.GET,"/mlt", solrQuery);
+        genericSolrRequest.setBasicAuthCredentials(solrUserName, solrPassword);
+        SimpleSolrResponse simpleSolrResponse = null;
         try {
-            queryResponse = solrClient.query(core, solrQuery);
+            simpleSolrResponse = genericSolrRequest.process(solrClient, core);
         } catch (SolrServerException | IOException e) {
             e.printStackTrace();
         }
-        assert queryResponse != null;
-        NamedList<Object> namedList = queryResponse.getResponse();
+        assert simpleSolrResponse != null;
+        NamedList<Object> namedList = simpleSolrResponse.getResponse();
         if(namedList == null) {
             return null;
         }
