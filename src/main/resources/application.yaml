@@ -3,6 +3,8 @@ server:
   servlet:
     context-path: /solrapi
 spring:
+  main:
+    allow-bean-definition-overriding: true
   mvc:
     servlet:
       load-on-startup: 1
@@ -16,16 +18,8 @@ spring:
       max-request-size: 2GB
   data:
     mongodb:
-#      username: ddi_user
-#      password: V5f3SThe
-#      authentication-database: admin
-#      database: ddi_db
-#      host: 193.62.55.69
-#      port: 30304
-#      repositories:
-#        type: auto
       uri: mongodb://ddi_user:V5f3SThe@193.62.55.69:30304/admin
-#      repositories:
-#        type: auto
-#    solr:
-#      host: http://106.38.63.153:33669/solr/
+#      database: ddi_db
+
+
+
