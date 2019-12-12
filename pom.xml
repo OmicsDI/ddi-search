@@ -19,10 +19,10 @@
     </properties>
 
     <dependencies>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-mongodb</artifactId>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.springframework.boot</groupId>-->
+            <!--<artifactId>spring-boot-starter-data-mongodb</artifactId>-->
+        <!--</dependency>-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web-services</artifactId>
@@ -72,9 +72,9 @@
 
 
         <!--<dependency>-->
-            <!--<groupId>uk.ac.ebi.ddi</groupId>-->
-            <!--<artifactId>ddi-service-db</artifactId>-->
-            <!--<version>1.12</version>-->
+        <!--<groupId>uk.ac.ebi.ddi</groupId>-->
+        <!--<artifactId>ddi-service-db</artifactId>-->
+        <!--<version>1.12</version>-->
         <!--</dependency>-->
 
         <dependency>

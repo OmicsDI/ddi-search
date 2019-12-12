@@ -90,8 +90,6 @@ public class SolrEntryServiceImpl implements ISolrEntryService {
                         this.saveSolrEntry(file.getAbsolutePath());
                         // 应该是移动到别的文件夹下留档
                         file.renameTo(new File(backupPath + "\\" + file.getName()));
-                    } else {
-                        continue;
                     }
 
                 }
