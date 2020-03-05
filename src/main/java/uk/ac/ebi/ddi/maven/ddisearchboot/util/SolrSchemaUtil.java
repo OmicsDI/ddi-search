@@ -12,6 +12,7 @@ public class SolrSchemaUtil {
         map.put("type", commonSolrSchema.getType().getTypeName());
         map.put("stored", commonSolrSchema.getStored());
         map.put("indexed", commonSolrSchema.getIndexed());
+        map.put("multiValued", true);
         return map;
     }
 }

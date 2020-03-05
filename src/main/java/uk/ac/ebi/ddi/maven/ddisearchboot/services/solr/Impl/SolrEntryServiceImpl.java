@@ -1,5 +1,7 @@
 package uk.ac.ebi.ddi.maven.ddisearchboot.services.solr.Impl;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.ac.ebi.ddi.maven.ddisearchboot.controller.Constans;
 import uk.ac.ebi.ddi.maven.ddisearchboot.model.mongo.Database;
 import uk.ac.ebi.ddi.maven.ddisearchboot.model.mongo.Entries;
@@ -13,6 +15,7 @@ import uk.ac.ebi.ddi.maven.ddisearchboot.model.queryModel.IQModel;
 import uk.ac.ebi.ddi.maven.ddisearchboot.model.queryModel.QueryModel;
 import uk.ac.ebi.ddi.maven.ddisearchboot.model.queryModel.SolrQueryBuilder;
 import uk.ac.ebi.ddi.maven.ddisearchboot.repo.solr.SolrEntryRepo;
+import uk.ac.ebi.ddi.maven.ddisearchboot.scheduler.ImportJob;
 import uk.ac.ebi.ddi.maven.ddisearchboot.services.solr.IEBISearchTaxonomyService;
 import uk.ac.ebi.ddi.maven.ddisearchboot.services.solr.ISolrEntryService;
 import uk.ac.ebi.ddi.maven.ddisearchboot.services.solr.ISolrSchemaService;
@@ -42,6 +45,8 @@ import java.util.stream.Collectors;
  */
 @Service
 public class SolrEntryServiceImpl implements ISolrEntryService {
+    private static final Logger logger = LoggerFactory.getLogger(SolrEntryServiceImpl.class);
+
     private final
     SolrEntryRepo solrEntryRepo;
 
@@ -89,9 +94,7 @@ public class SolrEntryServiceImpl implements ISolrEntryService {
                          */
                         this.saveSolrEntry(file.getAbsolutePath());
                         // 应该是移动到别的文件夹下留档
-                        file.renameTo(new File(backupPath + "\\" + file.getName()));
-                    } else {
-                        continue;
+                        file.renameTo(new File(backupPath + File.separator + file.getName()));
                     }
 
                 }
