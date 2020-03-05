@@ -28,7 +28,7 @@ import java.util.regex.Pattern;
  * @author Xpon
  */
 @Controller
-@RequestMapping(value = "/")
+@RequestMapping(value = "/apis")
 public class DatasetController {
 
     private static final Logger logger = LoggerFactory.getLogger(DatasetController.class);

@@ -42,7 +42,7 @@ public class QuartzScheduler {
     @Bean(name = "scheduler")
     public SchedulerFactoryBean schedulerFactory(Trigger cronJobTrigger) {
         SchedulerFactoryBean bean = new SchedulerFactoryBean();
-        bean.setOverwriteExistingJobs(true);
+        bean.setOverwriteExistingJobs(false);
         bean.setStartupDelay(1);
         bean.setTriggers(cronJobTrigger);
         return bean;
