@@ -22,8 +22,6 @@ import uk.ac.ebi.ddi.maven.ddisearchboot.services.solr.*;
 
 import java.util.regex.Pattern;
 
-//import uk.ac.ebi.ddi.maven.ddisearchboot.services.IMoneyService;
-
 /**
  * @author Xpon
  */

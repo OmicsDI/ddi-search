@@ -32,9 +32,7 @@ public class XmlHelper {
             ms.marshal(t, sw);
             ms.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
             ms.marshal(t, new FileOutputStream(path + "\\" + databaseName + System.currentTimeMillis() + (int) (Math.random() * 1000) + ".xml"));
-        } catch (JAXBException e) {
-            e.printStackTrace();
-        } catch (FileNotFoundException e) {
+        } catch (JAXBException | FileNotFoundException e) {
             e.printStackTrace();
         }
         System.out.println("ok");

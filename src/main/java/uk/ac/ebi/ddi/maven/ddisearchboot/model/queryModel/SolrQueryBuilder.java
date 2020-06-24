@@ -26,21 +26,13 @@ public class SolrQueryBuilder {
      */
     public static SolrQuery buildSolrQuery(IQModel iqModel) {
         SolrQuery solrQuery = new SolrQuery();
-//        Field[] fields = iqModel.getClass().getDeclaredFields();
         Field[] fields = ArrayUtils.addAll(iqModel.getClass().getDeclaredFields(), iqModel.getClass().getSuperclass().getDeclaredFields());
-        // 如果有Request_handler 添加进去
-//        for(Field field : fields) {
-//            if(field.getName().equalsIgnoreCase("REQUEST_HANDLER")) {
-//                solrQuery.setRequestHandler(field.getName());
-//            }
-//        }
         solrQuery = buildQuery(iqModel, solrQuery, fields);
         return solrQuery;
     }
 
 
     public static SolrQuery buildAdvancedSolrQuery(IQModel iqModel, SolrQuery solrQuery) {
-//        Field[] fields = iqModel.getClass().getDeclaredFields();
         Field[] fields = ArrayUtils.addAll(iqModel.getClass().getDeclaredFields(), iqModel.getClass().getSuperclass().getDeclaredFields());
         // 如果有Request_handler 添加进去
         for (Field field : fields) {
@@ -58,9 +50,6 @@ public class SolrQueryBuilder {
             String name = field.getName().substring(0, 1).toUpperCase() + field.getName().substring(1);
             try {
                 //根据方法名获取get方法值
-//                Method method = iqModel.getClass().getDeclaredMethod("get"+name);
-
-
                 Method method = getMethod(iqModel, field);
                 Object object = method.invoke(iqModel);
 
@@ -91,9 +80,7 @@ public class SolrQueryBuilder {
                         solrQuery.set(paramName, params);
                     }
                 }
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            } catch (InvocationTargetException e) {
+            } catch (IllegalAccessException | InvocationTargetException e) {
                 e.printStackTrace();
             }
         }
@@ -146,35 +133,17 @@ public class SolrQueryBuilder {
                             }
                         }
 
-
-//                        if(paramName.startsWith(FacetParams.FACET)){
-//                            solrQuery.setFacet(true);
-//                        }
-//                        if (paramName.startsWith(MoreLikeThisParams.MLT)) {
-//                            solrQuery.setMoreLikeThis(true);
-//                        }
-//                        if (paramName.startsWith(HighlightParams.HIGHLIGHT)) {
-//                            solrQuery.setHighlight(true);
-//                        }
-//                        if(paramName.startsWith(TermsParams.TERMS)) {
-//                            solrQuery.setTerms(true);
-//                        }
-
                         solrQuery.add(paramName, params);
                     }
                 }
-            } catch (NoSuchMethodException e) {
-                e.printStackTrace();
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            } catch (InvocationTargetException e) {
+            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
                 e.printStackTrace();
             }
         }
         return solrQuery;
     }
 
-    public static Method getMethod(IQModel iqModel, Field field) {
+    private static Method getMethod(IQModel iqModel, Field field) {
         Field[] fields = iqModel.getClass().getDeclaredFields();
         Method method = null;
         boolean flag = false;

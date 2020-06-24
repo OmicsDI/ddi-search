@@ -481,9 +481,6 @@ public class SolrSchemaServiceImpl implements ISolrSchemaService {
             }
 //            solrEntries.add(solrEntry);
             SolrInputDocument solrInputDocument = solrClient.getBinder().toSolrInputDocument(solrEntry);
-            additionalMap.keySet().forEach(x -> {
-                System.out.println(x);
-            });
             if (additionalMap.size() > 0) {
                additionalMap.keySet().forEach(key -> {
                    List<String> datas = additionalMap.get(key);

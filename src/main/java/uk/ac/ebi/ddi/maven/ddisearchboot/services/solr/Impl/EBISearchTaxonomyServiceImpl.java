@@ -22,7 +22,13 @@ public class EBISearchTaxonomyServiceImpl implements IEBISearchTaxonomyService {
     @Override
     public List<NCBITaxonomy> getNCBITaxonomyData(String ...id) {
 
-        UriComponentsBuilder builder = UriComponentsBuilder.newInstance().scheme("https").host(url).path("/ebisearch/ws/rest/taxonomy/entry").path("/"+ StringUtils.join(id, ",")).queryParam("fields", new Object[]{"name"}).queryParam("format", new Object[]{"JSON"});
+        UriComponentsBuilder builder = UriComponentsBuilder.newInstance()
+                .scheme("https")
+                .host(url)
+                .path("/ebisearch/ws/rest/taxonomy/entry")
+                .path("/"+ StringUtils.join(id, ","))
+                .queryParam("fields", new Object[]{"name"})
+                .queryParam("format", new Object[]{"JSON"});
 
         RestTemplate restTemplate = new RestTemplate();
 

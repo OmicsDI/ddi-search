@@ -37,7 +37,9 @@ public class ImportJob{
     }
 
     public void indexData() {
+        System.out.println("start");
         iSolrEntryService.saveSolrEntries(folderPath, backupPath);
+        System.out.println("end");
     }
 
     public String getBackupPath() {

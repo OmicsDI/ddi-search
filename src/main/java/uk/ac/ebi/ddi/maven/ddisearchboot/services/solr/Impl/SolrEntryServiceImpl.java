@@ -71,7 +71,9 @@ public class SolrEntryServiceImpl implements ISolrEntryService {
     public void saveSolrEntry(String xml) {
         Database database = new Database();
         database = XmlHelper.xmlToObject(xml, database);
-        assert database != null;
+        if (database == null) {
+            return;
+        }
         String core = Constans.Database.retriveSorlName(database.getName());
         Entries entries = database.getEntries();
         List<Entry> list = entries.getEntry();
